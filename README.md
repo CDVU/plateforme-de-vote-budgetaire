@@ -8,5 +8,4 @@ Une plateforme permettant de voter le budget sur des projet soumis par la commun
  - Système de vote du budget
  - Génération d'un rapport de résultat
 
-La plateforme est développé avec Django 1.9 
- 
+La plateforme est développé avec Django 1.8
