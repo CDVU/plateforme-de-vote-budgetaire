@@ -28,23 +28,21 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#">Plateforme budgétaire du CDVU</a>
+                    <a class="navbar-brand" href="{% url 'pages:home'%}">Plateforme budgétaire du CDVU</a>
                 </div>
 
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <li><a href="#">Accueil</a></li>
+                        <li><a href="{% url 'pages:home'%}">Accueil</a></li>
                         <li><a href="#">Projets</a></li>
                         <li><a href="#">Notre mission</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="{% url 'pages:contact'%}">Contact</a></li>
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">
                         {% if user.username %}
                             <li><a href="#">Logout</a></li>
-                        {% else %}
-                            <li><a href="#">Login</a></li>
                         {% endif %}
                     </ul>
                 </div><!-- /.navbar-collapse -->

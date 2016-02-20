@@ -1,3 +1,5 @@
+# coding: utf-8
+
 """
 Django settings for plateforme_budgetaire project.
 
@@ -83,12 +85,18 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'plateforme_budgetaire',
-        'USER': 'root',
+        'USER': '',
         'PASSWORD': '',
         'HOST': '',
     }
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = ''
+EMAIL_PORT = 465
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
@@ -108,3 +116,25 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
+
+CONSTANT = {
+    'site': {
+        'name': u"Plateforme budgétaire",
+        'url': u"http://127.0.0.1:8000",
+        'dns': u"http://localhost:8000",
+        'email_technique': u"rignon.noel@openmailbox.org",
+        'repository': u"https://github.com/RignonNoel/plateforme-de-vote-budgetaire",
+        'bugtracker': u"https://github.com/RignonNoel/plateforme-de-vote-budgetaire/issues",
+        'entreprise': {
+            'name': u"CDVU",
+            'address': u"1100 Rue Notre-Dame Ouest, Montréal, QC H3C 1K3",
+            'phone': u"(514) 396-8800"
+        },
+        'social': {
+            'twitter': u'',
+            'facebook': u'',
+            'linkedin': u'',
+            'youtube': u''
+        },
+    }
+}
