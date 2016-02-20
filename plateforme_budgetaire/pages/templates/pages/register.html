@@ -3,11 +3,23 @@
 {% load i18n %}
 {% block title %}CDVU | Home{% endblock %}
 
-{% load staticfiles %}
-
 {% block content %}
-    <form method="post">{% csrf_token%}
-        {{ form }}
-        <button type="submit">S'inscrire</button>
-    </form>
+    <div class="row">
+        <div class="col-sm-6">
+            <h2>Inscription à la plateforme budgétaire du CDVU</h2>
+            <p class="text-justify">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut gravida lorem. Ut turpis felis.</p>
+            <p class="text-justify">Pulvinar a semper sed, adipiscing id dolor. Pellentesque auctor nisi id magna consequat sagittis. Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In rutrum accumsan ultricies. Mauris vitae nisi at sem facilisis semper ac in est.</p>
+        </div>
+        <div class="col-sm-5 col-sm-offset-1">
+            <h1>Inscription : </h1>
+
+            <p class="alert alert-info"><strong>Pour vous inscire, rien de plus simple!</strong><br/> Nous n'avons besoin que de votre courriel étudiant</p>
+
+            <form method="post">{% csrf_token%}
+                {{ form }}
+                <br/>
+                <button type="submit" class="btn btn-default">S'inscrire</button> ou <a href="{% url 'pages:home'%}">Se connecter</a>
+            </form>
+        </div>
+    </div>
 {% endblock %}

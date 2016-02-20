@@ -15,16 +15,16 @@
 
             <form method="post" action="#">{% csrf_token%}
                 <div class="form-group">
-                    <label for="pseudo">Nom d'utilisateur : </label>
-                    <input class="form-control" id="pseudo" type="text" placeholder="AB12345@ens.etsmtl.ca">
+                    <label for="email">Email : </label>
+                    <input class="form-control" id="email" type="text" placeholder="AB12345@ens.etsmtl.ca">
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Mot de pase : </label>
+                    <label for="password">Mot de passe : </label>
                     <input class="form-control" id="password" type="text" placeholder="********">
                 </div>
 
-                <button type="submit" class="btn btn-default">Connexion</button> ou <a href="#">s'inscrire</a>
+                <button type="submit" class="btn btn-default">Connexion</button> ou <a href="{% url 'pages:register'%}">s'inscrire</a>
             </form>
         </div>
     </div>
