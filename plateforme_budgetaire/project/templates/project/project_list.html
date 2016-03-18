@@ -1,0 +1,40 @@
+{% extends "landing_base.html" %}
+
+{% block content %}
+    <h1>Liste des projets</h1>
+
+    <div class="row">
+        <p>
+            <strong>Status :</strong> {{ validation_state_selected }}
+            <select class="form-control" onchange="window.location = this.options[this.selectedIndex].value">
+                {% for status, key in status_list %}
+                    {% if validation_state_selected == key %}
+                    <option selected="selected" value="{% url 'projects:project_list' key %}">{{status}}</option>
+                    {% else %}
+                    <option value="{% url 'projects:project_list' key %}">{{status}}</option>
+                    {% endif %}
+                {% endfor %}
+
+                {% if validation_state_selected == 'all' %}
+                <option selected="selected" value="{% url 'projects:project_list' %}">Tous</option>
+                {% else %}
+                <option value="{% url 'projects:project_list' %}">Tous</option>
+                {% endif %}
+            </select>
+        </p>
+        <table class="table table-hover table-condensed sortable">
+            <thead>
+                <td><strong>Description</strong></td>
+            </thead>
+            <tbody>
+            {% for project in projects %}
+                <tr class="row-link">
+                    <td>
+                        {{project.description}}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
