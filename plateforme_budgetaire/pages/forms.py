@@ -14,3 +14,10 @@ class RegisterForm(forms.ModelForm):
         max_length=100
     )
     email.widget.attrs.update({'placeholder': _(u'AB12345@ens.etsmtl.ca'), 'class': 'form-control'})
+
+    password = forms.CharField(
+        label=_('Password'),
+        required=True,
+        max_length=100
+    )
+    password.widget.attrs.update({'placeholder': _(u'********'), 'class': 'form-control', 'type': 'hidden'})
