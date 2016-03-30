@@ -1,33 +1,38 @@
 {% extends "landing_base.html" %}
 
 {% block content %}
-    <h1>Liste des projets</h1>
-
     <div class="row">
-        <p>
-            <strong>Status :</strong>
-            <select class="form-control" onchange="window.location = this.options[this.selectedIndex].value">
-                {% for status, key in status_list %}
-                    {% if validation_state_selected == key %}
-                    <option selected="selected" value="{% url 'projects:project_list' key %}">{{status}}</option>
-                    {% else %}
-                    <option value="{% url 'projects:project_list' key %}">{{status}}</option>
-                    {% endif %}
-                {% endfor %}
+        <div class="col-sm-8">
+            <h1>Liste des projets</h1>
+        </div>
+        <div class="col-sm-4 text-right">
+            <p>
+                <strong>Filtrer les projets par status de validation:</strong>
+                <select class="form-control" onchange="window.location = this.options[this.selectedIndex].value">
+                    {% for status, key in status_list %}
+                        {% if validation_state_selected == key %}
+                        <option selected="selected" value="{% url 'projects:project_list' key %}">{{status}}</option>
+                        {% else %}
+                        <option value="{% url 'projects:project_list' key %}">{{status}}</option>
+                        {% endif %}
+                    {% endfor %}
 
-                {% if validation_state_selected == 'all' %}
-                <option selected="selected" value="{% url 'projects:project_list' %}">Tous</option>
-                {% else %}
-                <option value="{% url 'projects:project_list' %}">Tous</option>
-                {% endif %}
-            </select>
-        </p>
+                    {% if validation_state_selected == 'all' %}
+                    <option selected="selected" value="{% url 'projects:project_list' %}">Tous</option>
+                    {% else %}
+                    <option value="{% url 'projects:project_list' %}">Tous</option>
+                    {% endif %}
+                </select>
+            </p>
+        </div>
+    </div>
+    <div class="row">
         <table class="table table-hover table-condensed sortable">
         {% for project in projects %}
             <tr class="row-link">
                 <td>
                     <a href='{% url "projects:project_detail" project.id %}'>
-                        <h2>{{project.name}} - {{project.status}}</h2>
+                        <h4>{{project.name}} - {{project.status}}</h4>
                         <p class="text-justify">{{project.description}}</p>
                     </a>
                 </td>
