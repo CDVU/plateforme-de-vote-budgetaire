@@ -1,6 +1,9 @@
 # coding: utf-8
 
 from django.db import models
+from django.utils import timezone
+from django.core.urlresolvers import reverse_lazy
+
 
 PROJECT_STATUS_CHOICES = (
     (u'En attente', 0),
@@ -13,14 +16,15 @@ class Project(models.Model):
     class Meta:
         verbose_name_plural = 'Projets'
 
-
     name = models.CharField(
-        verbose_name='Nom',
-        max_length=100
+        verbose_name='Nom du projet',
+        max_length=100,
+        blank=False,
+        null=False
     )
 
     description = models.TextField(
-        verbose_name='Description'
+        verbose_name='Description du projet'
     )
 
     number_affected_by = models.PositiveIntegerField(
@@ -36,32 +40,41 @@ class Project(models.Model):
     )
 
     date_of_submission = models.DateTimeField(
-        verbose_name='Date de soumission'
+        verbose_name='Date de soumission',
     )
 
     author_name = models.CharField(
-        verbose_name='Nom',
+        verbose_name="Nom de l'auteur",
         max_length=100
     )
 
     author_website = models.TextField(
-        verbose_name='Site web',
+        verbose_name="Site web de l'auteur",
         blank=True
     )
 
     author_description = models.TextField(
-        verbose_name='Description',
+        verbose_name="À propos de l'auteur",
         blank=True
     )
 
     status = models.CharField(
         verbose_name='Validé',
         max_length=100,
-        choices=PROJECT_STATUS_CHOICES
+        choices=PROJECT_STATUS_CHOICES,
     )
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwarg):
+        if not self.id:
+            self.date_of_submission = timezone.now()
+
+        super(Project, self).save(*args, **kwarg)
+
+    def get_absolute_url(self):
+        return reverse_lazy('projects:project_detail', args=[self.id])
 
 
 class SubProject(models.Model):

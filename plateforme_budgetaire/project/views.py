@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.views import generic
 from project.models import Project, SubProject, PROJECT_STATUS_CHOICES
+from project.forms import ProjectsForm
+from django.core.urlresolvers import reverse_lazy
 
 
 class ProjectDetail(generic.DetailView):
@@ -42,3 +44,18 @@ class ProjectList(generic.ListView):
         context['validation_state_selected'] = self.status
         context['status_list'] = PROJECT_STATUS_CHOICES
         return context
+
+
+class ProjectCreate(generic.CreateView):
+    form_class = ProjectsForm
+    template_name = 'project/project_form.html'
+
+    def dispatch(self, *args, **kwargs):
+        return super(ProjectCreate, self).dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.status = PROJECT_STATUS_CHOICES[0][0]
+        return super(ProjectCreate, self).form_valid(form)
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
