@@ -49,29 +49,24 @@
 
     <div class="row" id="sub-project">
         <div class="col-sm-12">
-            <div id="accordion" class="panel-group">
-                {% for subProject in project.SubProject.all %}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ subProject.id }}">
-                                {{ subProject.name }}
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapse{{ subProject.id }}" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <strong>Temps nécessaire :</strong> {{ subProject.completion_time }}<br>
-                            <strong>Montant :</strong> {{ subProject.minimum_amount }} - {{ subProject.maximum_amount }}<br>
-                            <br>
-                            <p>
-                                {{ subProject.description }}
-                            </p>
-                        </div>
-                    </div>
+            <h2>Sous-projets :</h2>
+            {% for subProject in project.SubProject.all %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        {{ subProject.name }}
+                    </h4>
                 </div>
-                {% endfor %}
+                <div class="panel-body">
+                    <strong>Temps nécessaire :</strong> {{ subProject.completion_time }}<br>
+                    <strong>Montant :</strong> {{ subProject.minimum_amount }} - {{ subProject.maximum_amount }}<br>
+                    <br>
+                    <p>
+                        {{ subProject.description }}
+                    </p>
+                </div>
             </div>
+            {% endfor %}
         </div>
     </div>
 
