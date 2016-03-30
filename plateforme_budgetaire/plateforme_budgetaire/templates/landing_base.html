@@ -8,12 +8,7 @@
         </title>
         <link href="{% static 'bootstrap-3.3.6-dist/css/bootstrap.min.css' %}" rel="stylesheet">
         <link href="{% static 'font-awesome-4.5.0/css/font-awesome.css' %}" rel="stylesheet">
-
-        <style>
-        .row-link > td > a{
-            display: block;
-        }
-        </style>
+        <link href="{% static 'css/style.css' %}" rel="stylesheet">
 
         {% block extrahead %}{% endblock %}
     </head>
@@ -56,6 +51,7 @@
             </div>
         </div>
 
+        <script src="{% static 'jquery/jquery-2.2.2.min.js' %}" type="application/javascript"></script>
         <script src="{% static 'bootstrap-3.3.6-dist/js/bootstrap.min.js' %}" type="application/javascript"></script>
 
         <!-- WARNING :  Do not move this line before a manual import of script! -->
