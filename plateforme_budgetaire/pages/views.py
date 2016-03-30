@@ -19,6 +19,10 @@ def contact(request):
     return render(request, 'pages/contact.html')
 
 
+def mission(request):
+    return render(request, 'pages/mission.html')
+
+
 class Register(CreateView):
     model = User
     template_name = 'pages/register.html'
