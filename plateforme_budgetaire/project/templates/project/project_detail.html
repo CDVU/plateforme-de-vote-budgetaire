@@ -5,7 +5,21 @@
 {% endblock %}
 
 {% block content %}
-    <h1>{{project.name}}</h1>
+    <div class="row">
+        <div class="col-sm-8">
+            <h1>{{project.name}}</h1>
+        </div>
+        <div class="col-sm-4 text-right">
+            {% if status_id == 0 %}
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#AcceptModal">
+              Accepter le projet
+            </button>
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#RefuseModal">
+              Refuser le projet
+            </button>
+            {% endif %}
+        </div>
+    </div>
     <hr>
     <div class="row">
         <div class="col-sm-6">
@@ -59,5 +73,47 @@
                 {% endfor %}
             </div>
         </div>
+    </div>
+
+    <!-----------
+    --- MODAL ---
+    ------------>
+
+    <!-- Accept modal -->
+    <div class="modal fade" id="AcceptModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Accepter le projet</h4>
+          </div>
+          <div class="modal-body">
+            Êtes-vous sûr de vouloir <span class="text-success"><strong>accepter</strong></span> le projet <strong>{{project.name}}</strong>?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+            <a class="btn btn-success" href='{% url "projects:project_accept" project.id %}' >Accepté le projet</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Refuse Modal -->
+    <div class="modal fade" id="RefuseModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Rejeter le projet</h4>
+          </div>
+          <div class="modal-body">
+            Êtes-vous sûr de vouloir <span class="text-danger"><strong>rejeter</strong></span> le projet <strong>{{project.name}}</strong>?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+            <a class="btn btn-warning" href='{% url "projects:project_refuse" project.id %}'>Rejeter le projet</a>
+          </div>
+        </div>
+      </div>
     </div>
 {% endblock %}

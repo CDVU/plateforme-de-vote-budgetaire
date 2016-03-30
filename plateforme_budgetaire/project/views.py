@@ -3,6 +3,7 @@ from django.views import generic
 from project.models import Project, SubProject, PROJECT_STATUS_CHOICES
 from project.forms import ProjectsForm
 from django.core.urlresolvers import reverse_lazy
+from django.shortcuts import redirect
 
 
 class ProjectDetail(generic.DetailView):
@@ -16,6 +17,10 @@ class ProjectDetail(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ProjectDetail, self).get_context_data(**kwargs)
+        for key, value in PROJECT_STATUS_CHOICES:
+            if key == self.object.status:
+                context['status_id'] = value
+
         context['sub_projects'] = SubProject.objects.filter(project=self.object)
         return context
 
@@ -59,3 +64,19 @@ class ProjectCreate(generic.CreateView):
 
     def get_success_url(self):
         return self.object.get_absolute_url()
+
+
+def accept_project(request, id_of_project):
+    project = Project.objects.get(id=id_of_project)
+    project.status = PROJECT_STATUS_CHOICES[1][0]
+    project.save(update_fields=['status'])
+
+    return redirect(reverse_lazy("projects:project_detail", args=[project.id]))
+
+
+def refuse_project(request, id_of_project):
+    project = Project.objects.get(id=id_of_project)
+    project.status = PROJECT_STATUS_CHOICES[2][0]
+    project.save(update_fields=['status'])
+
+    return redirect(reverse_lazy("projects:project_detail", args=[project.id]))
