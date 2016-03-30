@@ -3,9 +3,9 @@
 from django.db import models
 
 PROJECT_STATUS_CHOICES = (
-    ('In waiting', 0),
-    ('Accepted', 1),
-    ('Rejected', 2)
+    (u'En attente', 0),
+    (u'Accepté', 1),
+    (u'Rejeté', 2)
 )
 
 
@@ -45,11 +45,13 @@ class Project(models.Model):
     )
 
     author_website = models.TextField(
-        verbose_name='Site web'
+        verbose_name='Site web',
+        blank=True
     )
 
     author_description = models.TextField(
-        verbose_name='Description'
+        verbose_name='Description',
+        blank=True
     )
 
     status = models.CharField(
@@ -86,6 +88,12 @@ class SubProject(models.Model):
 
     maximum_amount = models.PositiveIntegerField(
         verbose_name='Montant maximal'
+    )
+
+    project = models.ForeignKey(
+        Project,
+        verbose_name='Projet',
+        related_name='SubProject'
     )
 
     def __str__(self):
