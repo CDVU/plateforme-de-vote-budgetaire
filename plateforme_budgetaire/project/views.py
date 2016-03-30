@@ -1,6 +1,21 @@
 from django.shortcuts import render
 from django.views import generic
-from project.models import Project, PROJECT_STATUS_CHOICES
+from project.models import Project, SubProject, PROJECT_STATUS_CHOICES
+
+
+class ProjectDetail(generic.DetailView):
+    # List all project
+    model = Project
+    template_name = 'project/project_detail.html'
+
+    def dispatch(self, *args, **kwargs):
+        print kwargs['pk']
+        return super(ProjectDetail, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectDetail, self).get_context_data(**kwargs)
+        context['sub_projects'] = SubProject.objects.filter(project=self.object)
+        return context
 
 
 class ProjectList(generic.ListView):
