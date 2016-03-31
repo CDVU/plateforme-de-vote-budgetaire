@@ -7,12 +7,13 @@ from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse_lazy
 from pages.forms import RegisterForm
 import random
-
+from django.contrib.auth import logout
 from django.conf import settings
+from django.http import HttpResponseRedirect
 
 
 def home(request):
-    return render(request, 'pages/home.html')
+    return render(request, 'registration/login.html')
 
 
 def contact(request):
@@ -21,6 +22,12 @@ def contact(request):
 
 def mission(request):
     return render(request, 'pages/mission.html')
+
+
+def logout_view(request):
+    logout(request)
+    # Redirect to a success page.
+    return HttpResponseRedirect("/")
 
 
 class Register(CreateView):
