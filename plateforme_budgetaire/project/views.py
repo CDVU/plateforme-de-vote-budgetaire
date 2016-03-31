@@ -4,6 +4,8 @@ from project.models import Project, SubProject, PROJECT_STATUS_CHOICES
 from project.forms import ProjectsForm
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 
 class ProjectDetail(generic.DetailView):
@@ -55,6 +57,7 @@ class ProjectCreate(generic.CreateView):
     form_class = ProjectsForm
     template_name = 'project/project_form.html'
 
+    @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(ProjectCreate, self).dispatch(*args, **kwargs)
 
