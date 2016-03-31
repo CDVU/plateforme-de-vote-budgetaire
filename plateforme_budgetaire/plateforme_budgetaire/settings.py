@@ -115,6 +115,7 @@ USE_TZ = True
 
 APPEND_SLASH = True
 
+LOGIN_URL = reverse_lazy('pages:home')
 LOGIN_REDIRECT_URL = reverse_lazy('pages:home')
 
 # Static files (CSS, JavaScript, Images)
