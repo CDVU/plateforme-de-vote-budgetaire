@@ -3,7 +3,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.urlresolvers import reverse_lazy
-
+from django.contrib.auth.models import User
 
 PROJECT_STATUS_CHOICES = (
     (u'En attente', 0),
@@ -62,6 +62,12 @@ class Project(models.Model):
         verbose_name='Validé',
         max_length=100,
         choices=PROJECT_STATUS_CHOICES,
+    )
+
+    creator = models.ForeignKey(
+        User,
+        verbose_name='Creator',
+        related_name='Projects'
     )
 
     def __unicode__(self):
