@@ -1,31 +1,14 @@
 {% extends "landing_base.html" %}
 <!-- Load internationalisation utils-->
 {% load i18n %}
-{% block title %}CDVU | Home{% endblock %}
+{% block title %}CDVU | Mission{% endblock %}
 
 {% block content %}
     <div class="row">
-        <div class="col-sm-6">
-            <h2>A propos du CDVU</h2>
+        <h2>Notre mission</h2>
+        <div class="col-sm-12">
             <p class="text-justify">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut gravida lorem. Ut turpis felis.</p>
             <p class="text-justify">Pulvinar a semper sed, adipiscing id dolor. Pellentesque auctor nisi id magna consequat sagittis. Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In rutrum accumsan ultricies. Mauris vitae nisi at sem facilisis semper ac in est.</p>
-        </div>
-        <div class="col-sm-5 col-sm-offset-1">
-            <h1>Connexion : </h1>
-
-            <form method="post" action="#">{% csrf_token%}
-                <div class="form-group">
-                    <label for="email">Email : </label>
-                    <input class="form-control" id="email" type="text" placeholder="AB12345@ens.etsmtl.ca">
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Mot de passe : </label>
-                    <input class="form-control" id="password" type="text" placeholder="********">
-                </div>
-
-                <button type="submit" class="btn btn-default">Connexion</button> ou <a href="{% url 'pages:register'%}">s'inscrire</a>
-            </form>
         </div>
     </div>
 {% endblock %}

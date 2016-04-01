@@ -1,6 +1,30 @@
 from django.shortcuts import render
 from django.views import generic
-from project.models import Project, PROJECT_STATUS_CHOICES
+from project.models import Project, SubProject, PROJECT_STATUS_CHOICES
+from project.forms import ProjectsForm
+from django.core.urlresolvers import reverse_lazy
+from django.shortcuts import redirect
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+
+
+class ProjectDetail(generic.DetailView):
+    # List all project
+    model = Project
+    template_name = 'project/project_detail.html'
+
+    def dispatch(self, *args, **kwargs):
+        print kwargs['pk']
+        return super(ProjectDetail, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectDetail, self).get_context_data(**kwargs)
+        for key, value in PROJECT_STATUS_CHOICES:
+            if key == self.object.status:
+                context['status_id'] = value
+
+        context['sub_projects'] = SubProject.objects.filter(project=self.object)
+        return context
 
 
 class ProjectList(generic.ListView):
@@ -27,3 +51,35 @@ class ProjectList(generic.ListView):
         context['validation_state_selected'] = self.status
         context['status_list'] = PROJECT_STATUS_CHOICES
         return context
+
+
+class ProjectCreate(generic.CreateView):
+    form_class = ProjectsForm
+    template_name = 'project/project_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ProjectCreate, self).dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.status = PROJECT_STATUS_CHOICES[0][0]
+        return super(ProjectCreate, self).form_valid(form)
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
+
+def accept_project(request, id_of_project):
+    project = Project.objects.get(id=id_of_project)
+    project.status = PROJECT_STATUS_CHOICES[1][0]
+    project.save(update_fields=['status'])
+
+    return redirect(reverse_lazy("projects:project_detail", args=[project.id]))
+
+
+def refuse_project(request, id_of_project):
+    project = Project.objects.get(id=id_of_project)
+    project.status = PROJECT_STATUS_CHOICES[2][0]
+    project.save(update_fields=['status'])
+
+    return redirect(reverse_lazy("projects:project_detail", args=[project.id]))

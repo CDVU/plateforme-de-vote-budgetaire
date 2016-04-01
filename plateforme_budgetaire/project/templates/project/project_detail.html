@@ -1,0 +1,114 @@
+{% extends "landing_base.html" %}
+
+{% block extrajs %}
+
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-8">
+            <h1>{{project.name}}</h1>
+        </div>
+        <div class="col-sm-4 text-right">
+            {% if status_id == 0 %}
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#AcceptModal">
+              Accepter le projet
+            </button>
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#RefuseModal">
+              Refuser le projet
+            </button>
+            {% endif %}
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-sm-6">
+            <strong>Porteur du projet :</strong> {{project.author_name}}<br>
+            {% if project.author_website %}
+            <strong>Site web :</strong> <a href="{{project.author_website}}">{{project.author_website}}</a><br>
+            {% endif %}
+            <strong>À propos :</strong> {{project.author_description}}<br>
+        </div>
+        <div class="col-sm-6">
+            <strong>Nombre d'étudiant impacté :</strong> {{project.number_affected_by}}<br>
+            <strong>Temps nécessaire :</strong> {{project.completion_time}}<br>
+            <strong>Date de soumission :</strong> {{project.date_of_submission}}<br>
+            <strong>Status :</strong> {{project.status}}
+        </div>
+    </div>
+    <hr>
+    <div class="row" id="project">
+        <div class="col-sm-12">
+            <h2>Description :</h2>
+            <p class="text-justify">{{project.description}}</p>
+
+            <h2>Justification :</h2>
+            <p class="text-justify">{{project.justification}}</p>
+        </div>
+    </div>
+
+    <div class="row" id="sub-project">
+        <div class="col-sm-12">
+            <h2>Sous-projets :</h2>
+            {% for subProject in project.SubProject.all %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        {{ subProject.name }}
+                    </h4>
+                </div>
+                <div class="panel-body">
+                    <strong>Temps nécessaire :</strong> {{ subProject.completion_time }}<br>
+                    <strong>Montant :</strong> {{ subProject.minimum_amount }} - {{ subProject.maximum_amount }}<br>
+                    <br>
+                    <p>
+                        {{ subProject.description }}
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-----------
+    --- MODAL ---
+    ------------>
+
+    <!-- Accept modal -->
+    <div class="modal fade" id="AcceptModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Accepter le projet</h4>
+          </div>
+          <div class="modal-body">
+            Êtes-vous sûr de vouloir <span class="text-success"><strong>accepter</strong></span> le projet <strong>{{project.name}}</strong>?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+            <a class="btn btn-success" href='{% url "projects:project_accept" project.id %}' >Accepté le projet</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Refuse Modal -->
+    <div class="modal fade" id="RefuseModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Rejeter le projet</h4>
+          </div>
+          <div class="modal-body">
+            Êtes-vous sûr de vouloir <span class="text-danger"><strong>rejeter</strong></span> le projet <strong>{{project.name}}</strong>?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+            <a class="btn btn-warning" href='{% url "projects:project_refuse" project.id %}'>Rejeter le projet</a>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
