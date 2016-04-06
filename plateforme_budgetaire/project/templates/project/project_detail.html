@@ -65,6 +65,7 @@
                     <p>
                         {{ subProject.description }}
                     </p>
+                    <a class="btn btn-primary pull-right" href='{% url "projects:subproject_create" project.id %}' role="button" >Modifier sous-projet</a>
                 </div>
             </div>
             {% endfor %}
