@@ -87,7 +87,6 @@ class SubProject(models.Model):
     class Meta:
         verbose_name_plural = 'Sous-Projets'
 
-
     name = models.CharField(
         verbose_name='Nom',
         max_length=100
@@ -117,3 +116,6 @@ class SubProject(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse_lazy('projects:project_detail', args=[self.project.id])

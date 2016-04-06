@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import generic
 from project.models import Project, SubProject, PROJECT_STATUS_CHOICES
-from project.forms import ProjectsForm
+from project.forms import ProjectsForm, SubProjectsForm
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
@@ -82,6 +82,22 @@ class ProjectCreate(generic.CreateView):
         form.instance.status = PROJECT_STATUS_CHOICES[0][0]
         form.instance.creator = self.request.user
         return super(ProjectCreate, self).form_valid(form)
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
+
+class SubProjectCreate(generic.CreateView):
+    form_class = SubProjectsForm
+    template_name = 'project/subproject_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(SubProjectCreate, self).dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.project = Project.objects.get(id=self.kwargs['projectID'])
+        return super(SubProjectCreate, self).form_valid(form)
 
     def get_success_url(self):
         return self.object.get_absolute_url()
