@@ -4,10 +4,7 @@
 
 
 {% block content %}
-    <h2>Soumettre un nouveau projet</h2>
-    <p class="alert alert-info">
-        Il est possible que vous soyez contacté durant la phase de validation de votre projet afin de clarifier certains points de celui-ci.
-    </p>
+    <h2>Soumettre un nouveau sous-projet</h2>
     <form enctype="multipart/form-data" method="post">{% csrf_token%}
         {% bootstrap_form form %}
         {% buttons %}

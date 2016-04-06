@@ -49,7 +49,8 @@
 
     <div class="row" id="sub-project">
         <div class="col-sm-12">
-            <h2>Sous-projets :</h2>
+            <a class="btn btn-success pull-right" href='{% url "projects:subproject_create" project.id %}' role="button" >Ajouter sous-projet</a>
+            <h2>Sous-projets : </h2>
             {% for subProject in project.SubProject.all %}
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -64,6 +65,7 @@
                     <p>
                         {{ subProject.description }}
                     </p>
+                    <a class="btn btn-primary pull-right" href='{% url "projects:subproject_create" project.id %}' role="button" >Modifier sous-projet</a>
                 </div>
             </div>
             {% endfor %}

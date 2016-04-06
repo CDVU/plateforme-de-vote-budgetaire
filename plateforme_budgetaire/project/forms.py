@@ -1,11 +1,10 @@
 # coding: utf-8
 
 from django import forms
-from project.models import Project
+from project.models import Project, SubProject
 
 
 class ProjectsForm(forms.ModelForm):
-
 
     class Meta:
         model = Project
@@ -41,6 +40,44 @@ class ProjectsForm(forms.ModelForm):
                 attrs={
                     'placeholder': u"Justifiez ici la raison pour laquelle votre projet devrais "
                                    u"être supporter par le CDVU et ce qu'il apporte à la communauté"
+                }
+            ),
+        }
+
+
+class SubProjectsForm(forms.ModelForm):
+
+    class Meta:
+        model = SubProject
+        fields = [
+            'name',
+            'description',
+            'completion_time',
+            'minimum_amount',
+            'maximum_amount',
+        ]
+        widgets = {
+            'name': forms.TextInput(),
+            'description': forms.Textarea(
+                attrs={
+                    'placeholder': u"Décrivez ici votre sous-projet: ces enjeux, son avancements, "
+                                   u"votre équipe, .."
+                }
+            ),
+            'completion_time': forms.NumberInput(
+                attrs={
+                    'placeholder': u"Justifiez ici la raison pour laquelle votre sous-projet devrais "
+                                   u"être supporter par le CDVU et ce qu'il apporte à la communauté"
+                }
+            ),
+            'minimum_amount': forms.NumberInput(
+                attrs={
+                    'placeholder': u"Veuillez entrer un montant minimum pour votre sous-projet"
+                }
+            ),
+            'maximum_amount': forms.NumberInput(
+                attrs={
+                    'placeholder': u"Veuillez entrer un montant maximum pour votre sous-projet"
                 }
             ),
         }
