@@ -1,0 +1,18 @@
+{% extends "landing_base.html" %}
+<!-- Load internationalisation utils-->
+{% load i18n %}
+{% block title %}CDVU | Home{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>Activation de votre compte</h2>
+            {% if validated %}
+            <p class="alert alert-success">Votre compte vient d'être activé!</p>
+            <a class="btn btn-primary" href="{% url 'pages:home' %}">Page d'accueil</a>
+            {% else %}
+            <p class="alert alert-danger">{{error}}</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
