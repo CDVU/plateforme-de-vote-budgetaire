@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'pages',
     'project',
     'plateforme_budgetaire',
+    'vote'
 )
 
 MIDDLEWARE_CLASSES = (
