@@ -6,11 +6,14 @@ from project.models import SubProject
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 
 class Form(generic.TemplateView):
     template_name = 'vote/form.html'
 
+    @method_decorator(login_required())
     def dispatch(self, request, *args, **kwargs):
         vote = Vote.objects.latest('id')
         if request.user in vote.users.all():
