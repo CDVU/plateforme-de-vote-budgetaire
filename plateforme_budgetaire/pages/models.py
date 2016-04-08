@@ -9,7 +9,6 @@ class Hash(models.Model):
     class Meta:
         verbose_name_plural = 'Hashs'
 
-
     user = models.ForeignKey(
         User,
         verbose_name='User',
