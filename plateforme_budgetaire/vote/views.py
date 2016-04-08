@@ -50,6 +50,21 @@ class Form(generic.TemplateView):
                 if 'subProject-' + str(sub_project.id) in request.POST:
                     sub_project_list.append(sub_project.id)
 
+        # Check if the vote.amount is respected
+        amount = 0
+        for elem_id in sub_project_list:
+            amount += int(request.POST['subProject-' + str(elem_id) + '-amount'])
+        if amount > vote.amount:
+            print 'titi'
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Une erreur est survenu avec votre budget, celui-ci est supérieur au budget disponible. Veuillez recommencer!'
+            )
+            response = reverse('votes:form')
+            return HttpResponseRedirect(response)
+        else:
+            print 'toto'
         # Create the poll
         poll = Poll.objects.create(vote=vote)
 
