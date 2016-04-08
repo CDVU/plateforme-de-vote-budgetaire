@@ -1,0 +1,10 @@
+language: python
+
+python:
+  - 3.5
+
+install:
+  - pip install pep8
+
+script:
+  - pep8 --count --show-source --exclude=migrations,plateforme_budgetaire/plateforme_budgetaire,manage.py plateforme_budgetaire/

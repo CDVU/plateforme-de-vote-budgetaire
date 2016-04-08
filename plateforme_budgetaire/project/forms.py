@@ -27,19 +27,22 @@ class ProjectsForm(forms.ModelForm):
             ),
             'author_description': forms.Textarea(
                 attrs={
-                    'placeholder': u"Décrivez brievement ici vous ou votre organisation."
+                    'placeholder': u"Décrivez brievement ici vous ou votre "
+                                   u"organisation."
                 }
             ),
             'description': forms.Textarea(
                 attrs={
-                    'placeholder': u"Décrivez ici votre projet: ces enjeux, son avancements, "
-                                   u"votre équipe, .."
+                    'placeholder': u"Décrivez ici votre projet: ces enjeux, "
+                                   u"son avancements, votre équipe, .."
                 }
             ),
             'justification': forms.Textarea(
                 attrs={
-                    'placeholder': u"Justifiez ici la raison pour laquelle votre projet devrais "
-                                   u"être supporter par le CDVU et ce qu'il apporte à la communauté"
+                    'placeholder': u"Justifiez ici la raison pour laquelle "
+                                   u"votre projet devrais être supporter "
+                                   u"par le CDVU et ce qu'il apporte à la "
+                                   u"communauté"
                 }
             ),
         }
@@ -60,24 +63,29 @@ class SubProjectsForm(forms.ModelForm):
             'name': forms.TextInput(),
             'description': forms.Textarea(
                 attrs={
-                    'placeholder': u"Décrivez ici votre sous-projet: ces enjeux, son avancements, "
-                                   u"votre équipe, .."
+                    'placeholder': u"Décrivez ici votre sous-projet: ces "
+                                   u"enjeux, son avancements, votre équipe, "
+                                   u".."
                 }
             ),
             'completion_time': forms.NumberInput(
                 attrs={
-                    'placeholder': u"Justifiez ici la raison pour laquelle votre sous-projet devrais "
-                                   u"être supporter par le CDVU et ce qu'il apporte à la communauté"
+                    'placeholder': u"Justifiez ici la raison pour laquelle "
+                                   u"votre sous-projet devrais être "
+                                   u"supporter par le CDVU et ce qu'il "
+                                   u"apporte à la communauté"
                 }
             ),
             'minimum_amount': forms.NumberInput(
                 attrs={
-                    'placeholder': u"Veuillez entrer un montant minimum pour votre sous-projet"
+                    'placeholder': u"Veuillez entrer un montant minimum "
+                                   u"pour votre sous-projet"
                 }
             ),
             'maximum_amount': forms.NumberInput(
                 attrs={
-                    'placeholder': u"Veuillez entrer un montant maximum pour votre sous-projet"
+                    'placeholder': u"Veuillez entrer un montant maximum "
+                                   u"pour votre sous-projet"
                 }
             ),
         }

@@ -77,7 +77,8 @@ class Register(CreateView):
         messages.add_message(
             request,
             messages.INFO,
-            "Un courriel vient de vous être envoyé afin de valider votre inscription!"
+            "Un courriel vient de vous être envoyé afin de valider votre "
+            "inscription!"
         )
 
         return reverse_lazy("pages:home")
@@ -111,14 +112,15 @@ class RegisterValidation(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super(RegisterValidation, self).get_context_data(*args)
 
-        invalid_error = "Ce lien n'est pas valide, une erreure est peut-être survenu! " \
-                        "Essayer de recopier votre lien manuellement ou demander en un nouveau."
+        invalid_error = "Ce lien n'est pas valide, une erreure est " \
+                        "peut-être survenu! Essayer de recopier votre " \
+                        "lien manuellement ou demander en un nouveau."
 
-        datetime_error = "Ce lien n'est plus valide, vous pouvez en demander un" \
-                         " nouveau afin d'opérer cette action!"
+        datetime_error = "Ce lien n'est plus valide, vous pouvez en " \
+                         "demander un nouveau afin d'opérer cette action!"
 
-        used_error = "Ce lien a déjà été utilisé, vous ne pouvez pas effectuer " \
-                     "cette action plusieurs fois!"
+        used_error = "Ce lien a déjà été utilisé, vous ne pouvez pas " \
+                     "effectuer cette action plusieurs fois!"
 
         try:
             hash = Hash.objects.get(hash=self.args[0])

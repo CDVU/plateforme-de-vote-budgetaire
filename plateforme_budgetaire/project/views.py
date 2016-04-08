@@ -25,7 +25,8 @@ class ProjectDetail(generic.DetailView):
             if key == self.object.status:
                 context['status_id'] = value
 
-        context['sub_projects'] = SubProject.objects.filter(project=self.object)
+        context['sub_projects'] = SubProject.objects.\
+            filter(project=self.object)
         return context
 
 
@@ -45,7 +46,8 @@ class ProjectList(generic.ListView):
     def get_queryset(self):
         if self.request.user.is_staff:
             if self.status == 'all':
-                list_project = Project.objects.all().order_by('-date_of_submission')
+                list_project = Project.objects.all().\
+                    order_by('-date_of_submission')
             else:
                 status = PROJECT_STATUS_CHOICES[self.status][0]
                 list_project = Project.objects.filter(
@@ -87,7 +89,7 @@ class ProjectCreate(generic.CreateView):
 
     def get_success_url(self):
         messages.add_message(
-            request,
+            self.request,
             messages.SUCCESS,
             'Le projet à bien été soumis!'
         )
@@ -103,12 +105,13 @@ class SubProjectCreate(generic.CreateView):
         return super(SubProjectCreate, self).dispatch(*args, **kwargs)
 
     def form_valid(self, form):
-        form.instance.project = Project.objects.get(id=self.kwargs['projectID'])
+        form.instance.project = Project.objects.\
+            get(id=self.kwargs['projectID'])
         return super(SubProjectCreate, self).form_valid(form)
 
     def get_success_url(self):
         messages.add_message(
-            request,
+            self.request,
             messages.SUCCESS,
             'Le sous-projet à bien été ajouté!'
         )
@@ -125,7 +128,10 @@ def accept_project(request, id_of_project):
         messages.SUCCESS,
         'Le projet à bien été accepté!'
     )
-    return redirect(reverse_lazy("projects:project_detail", args=[project.id]))
+    return redirect(reverse_lazy(
+        "projects:project_detail",
+        args=[project.id]
+    ))
 
 
 def refuse_project(request, id_of_project):
@@ -138,4 +144,7 @@ def refuse_project(request, id_of_project):
         messages.WARNING,
         'Le projet a été refusé!'
     )
-    return redirect(reverse_lazy("projects:project_detail", args=[project.id]))
+    return redirect(reverse_lazy(
+        "projects:project_detail",
+        args=[project.id]
+    ))

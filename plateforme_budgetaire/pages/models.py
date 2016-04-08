@@ -9,7 +9,6 @@ class Hash(models.Model):
     class Meta:
         verbose_name_plural = 'Hashs'
 
-
     user = models.ForeignKey(
         User,
         verbose_name='User',
@@ -38,7 +37,9 @@ class Hash(models.Model):
     )
 
     def __str__(self):
-        return str(self.user) + ' - ' + str(self.action) + ' - ' + str(self.created)
+        return str(self.user) + ' - ' + \
+               str(self.action) + ' - ' + \
+               str(self.created)
 
     def save(self, *args, **kwarg):
         if not self.id:
