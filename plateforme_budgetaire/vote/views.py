@@ -6,11 +6,14 @@ from project.models import SubProject
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 
 class Form(generic.TemplateView):
     template_name = 'vote/form.html'
 
+    @method_decorator(login_required())
     def dispatch(self, request, *args, **kwargs):
         vote = Vote.objects.latest('id')
         if request.user in vote.users.all():
@@ -47,6 +50,21 @@ class Form(generic.TemplateView):
                 if 'subProject-' + str(sub_project.id) in request.POST:
                     sub_project_list.append(sub_project.id)
 
+        # Check if the vote.amount is respected
+        amount = 0
+        for elem_id in sub_project_list:
+            amount += int(request.POST['subProject-' + str(elem_id) + '-amount'])
+        if amount > vote.amount:
+            print 'titi'
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Une erreur est survenu avec votre budget, celui-ci est supérieur au budget disponible. Veuillez recommencer!'
+            )
+            response = reverse('votes:form')
+            return HttpResponseRedirect(response)
+        else:
+            print 'toto'
         # Create the poll
         poll = Poll.objects.create(vote=vote)
 
