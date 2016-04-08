@@ -1,0 +1,258 @@
+{% extends "landing_base.html" %}
+{% block title %}Formulaire de vote{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>Formulaire de vote</h2>
+            <!-- PROGRESS BAR -->
+            <div id="progress-bar" class="col-sm-12">
+                <div id="tooltip" class="progress" data-toggle="tooltip" data-placement="bottom" title="Il vous reste 4000$ de budget!">
+                    <div id="progress-bar-text" class="progress-bar" aria-valuemax="7000" role="progressbar" style="min-width: 2em;">
+                        0$
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENT -->
+            <form method="post" action='{% url "votes:form" %}'>{% csrf_token%}
+                <div class="col-sm-9">
+                    {% for project in vote.projects.all %}
+                    {% if forloop.first %}
+                    <div id="project-{{project.id}}" class="project-content panel panel-default">
+                    {% else %}
+                    <div id="project-{{project.id}}" style="display:none;" class="project-content panel panel-default">
+                    {% endif %}
+                        <div class="panel-heading panel-heading-large">
+                            <span class="pull-right">
+                                <input class="project-switch" type="checkbox" name="project-{{project.id}}" onchange="changeValueSwitch({{project.id}}, this.checked)">
+                            </span>
+                            <strong>{{project.name}}</strong>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <strong>Porteur du projet :</strong> {{project.author_name}}<br>
+                                    {% if project.author_website %}
+                                    <strong>Site web :</strong> <a href="{{project.author_website}}">{{project.author_website}}</a><br>
+                                    {% endif %}
+                                    <strong>À propos :</strong> {{project.author_description}}<br>
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>Nombre d'étudiant impacté :</strong> {{project.number_affected_by}}<br>
+                                    <strong>Temps nécessaire :</strong> {{project.completion_time}}<br>
+                                    <strong>Date de soumission :</strong> {{project.date_of_submission}}<br>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <h2>Description:</h2>
+                                    <p class="text-justify">
+                                        {{ project.description }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <h2>Justification:</h2>
+                                    <p class="text-justify">
+                                        {{ project.justification }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row" id="sub-project">
+                                <div class="col-sm-12">
+                                    <h2>Sous-projets : </h2>
+                                    {% for subProject in project.SubProject.all %}
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading panel-heading-large">
+                                            <span class="pull-right">
+                                                <input onchange="refreshProgressBar()" class="subProject-switch" type="checkbox" name="subProject-{{subProject.id}}" checked>
+                                            </span>
+                                            <h4 class="panel-title">
+                                                {{ subProject.name }}
+                                            </h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <strong>Temps nécessaire :</strong> {{ subProject.completion_time }}<br>
+                                            <strong>Montant :</strong> {{ subProject.minimum_amount }} - {{ subProject.maximum_amount }}<br>
+                                            <br>
+                                            <p>
+                                                {{ subProject.description }}
+                                            </p><br/>
+                                            <input class="subProject-{{subProject.id}}-amount" name="subProject-{{subProject.id}}-amount" onchange="changeValueAmount(this.value, {{subProject.id}})" type="range" value="{{subProject.minimum_amount}}" min="{{subProject.minimum_amount}}" max="{{subProject.maximum_amount}}">
+                                            <div class="input-group">
+                                                <span class="input-group-addon" id="basic-addon1">$</span>
+                                                <input class="subProject-{{subProject.id}}-amount form-control" name="subProject-{{subProject.id}}-amount" onchange="changeValueAmount(this.value, {{subProject.id}})" type="number" value="{{subProject.minimum_amount}}" min="{{subProject.minimum_amount}}" max="{{subProject.maximum_amount}}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- MENU -->
+                <div class="col-sm-3">
+                    <ul class="nav nav-pills nav-stacked">
+                        {% for project in vote.projects.all %}
+                        {% if forloop.first %}
+                        <li role="presentation" class="menu-project active">
+                        {% else %}
+                        <li role="presentation" class="menu-project">
+                        {% endif %}
+                            <a href="#" onclick="changeContent({{project.id}}, this)">
+                                <span id="menu-project-{{project.id}}" class="glyphicon glyphicon-remove"></span>
+                                {{project.name}}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <button type="submit" class="btn btn-success pull-right" id="submit-vote">Soumettre le vote</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrajs %}
+    <!-- JS BOOTSTRAP SWITCH -->
+    <script type="text/javascript">
+        $("[type='checkbox']").bootstrapSwitch();
+    </script>
+
+    <!-- JS CHANGE VALUE SWITCH -->
+    <script type="text/javascript">
+        function changeValueSwitch(id, value) {
+                menu = document.getElementById('menu-project-'+id);
+                if(value == true){
+                    menu.className = "glyphicon glyphicon-ok";
+                }
+                else{
+                    menu.className = "glyphicon glyphicon-remove";
+                }
+                refreshProgressBar()
+        }
+    </script>
+
+    <!-- JS REFRESH PROGRESS BAR VALUE -->
+    <script type="text/javascript">
+        function refreshProgressBar() {
+            value = 0;
+
+            /**************
+            Sum of amount
+            **************/
+
+            projects = document.getElementsByClassName('project-switch');
+            for (index = 0; index < projects.length; ++index) {
+                if(projects[index].checked){
+                    project = document.getElementById(projects[index].name)
+                    subProjects = project.getElementsByClassName('subProject-switch');
+                    for (indexB = 0; indexB < subProjects.length; ++indexB) {
+                        if(subProjects[indexB].checked){
+                            input = document.getElementsByClassName(subProjects[indexB].name + '-amount')[0];
+                            value += parseInt(input.value);
+                        }
+                    }
+                }
+            }
+
+            /***************************
+            Design of the progress-bar
+            ***************************/
+
+            bar = document.getElementById('progress-bar-text');
+            bar.innerHTML = value + '$';
+
+            max = bar.getAttribute('aria-valuemax');
+            percent = value/max*100;
+            if(percent > 100){
+                percent = 100;
+            }
+            bar.style.width = percent + '%';
+
+            if(percent > 90){
+                bar.className = "progress-bar progress-bar-striped progress-bar-danger";
+            }
+            else if(percent >70){
+                bar.className = "progress-bar progress-bar-warning";
+            }
+            else{
+                bar.className = "progress-bar";
+            }
+
+            /***************************
+            Text of tooltip
+            ***************************/
+            tooltip = document.getElementById('tooltip');
+            if(max < value){
+                valueText = parseInt(value)-parseInt(max);
+                text = "Votre budget dépasse de " + valueText + "$.";
+                tooltip.setAttribute('data-original-title', text);
+                $('[data-toggle="tooltip"]').tooltip('show');
+            }
+            else{
+                valueText = parseInt(max)-parseInt(value);
+                text = "Il vous reste " + valueText + "$.";
+                tooltip.setAttribute('data-original-title', text);
+                $('[data-toggle="tooltip"]').tooltip('hide');
+            }
+        }
+    </script>
+
+    <!-- JS CHANGE VALUE AMOUNT SUBPROJECT -->
+    <script type="text/javascript">
+        function changeValueAmount(value, id) {
+                menu = document.getElementsByClassName('subProject-' + id + '-amount');
+                menu[0].value = value;
+                menu[1].value = value;
+                refreshProgressBar()
+        }
+    </script>
+
+    <!-- JS PROGRESS BAR -->
+    <script type="text/javascript">
+        var positionElementInPage = $('#progress-bar').offset().top;
+        $(window).scroll(
+            function() {
+                if ($(window).scrollTop() >= positionElementInPage-50) {
+                    // fixed
+                    $('#progress-bar').addClass("floatable");
+                } else {
+                    // relative
+                    $('#progress-bar').removeClass("floatable");
+                }
+            }
+        );
+    </script>
+
+    <!-- JS CHANGE CONTENT/PROJECT -->
+    <script type="text/javascript">
+        function changeContent(id, element) {
+                projects = document.getElementsByClassName('project-content');
+                for (index = 0; index < projects.length; ++index) {
+                    projects[index].style.display = 'none';
+                }
+                document.getElementById('project-'+id).style.display = 'block';
+
+                menus = document.getElementsByClassName('menu-project');
+                for (index = 0; index < menus.length; ++index) {
+                    menus[index].className = "menu-project";
+                }
+                element.parentNode.className += " active";
+
+        }
+    </script>
+
+    <!-- JS TOOLTIP -->
+    <script type="text/javascript">
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+{% endblock %}

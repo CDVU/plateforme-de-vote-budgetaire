@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include('pages.urls', namespace="pages")),
     url(r'^projects/', include('project.urls', namespace="projects")),
+    url(r'^votes/', include('vote.urls', namespace="votes")),
 ]
