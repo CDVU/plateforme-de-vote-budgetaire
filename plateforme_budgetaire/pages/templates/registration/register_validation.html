@@ -6,7 +6,9 @@
 {% block content %}
     <div class="row">
         <div class="col-sm-12">
-            <h2>Activation de votre compte</h2>
+            <div class="page-header">
+                <h2>Activation de votre compte</h2>
+            </div>
             {% if validated %}
             <p class="alert alert-success">Votre compte vient d'être activé!</p>
             <a class="btn btn-primary" href="{% url 'pages:home' %}">Page d'accueil</a>
