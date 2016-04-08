@@ -114,10 +114,53 @@
                         </li>
                         {% endfor %}
                     </ul>
-                    <button type="submit" class="btn btn-success pull-right" id="submit-vote">Soumettre le vote</button>
+                    <button id="submit-vote" type="button" class="btn btn-success" data-toggle="modal" data-target="#SubmitModal">
+                        Soumettre le vote
+                    </button>
                 </div>
             </form>
         </div>
+    </div>
+
+    <!-----------
+    --- MODAL ---
+    ------------>
+
+    <!-- Submit modal -->
+    <div class="modal fade" id="SubmitModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Soumettre le vote</h4>
+          </div>
+          <div class="modal-body">
+            Êtes-vous sûr de vouloir soumettre votre vote ?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-success">Soumettre</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error modal -->
+    <div class="modal fade" id="ErrorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Impossible de soumettre le vote</h4>
+          </div>
+          <div class="modal-body">
+            Le budget que vous avez défini dépasse le budget soumis au vote. Vous devez d'abord équilibrer votre budget!
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Annuler</button>
+          </div>
+        </div>
+      </div>
     </div>
 {% endblock %}
 
@@ -204,6 +247,18 @@
                 tooltip.setAttribute('data-original-title', text);
                 $('[data-toggle="tooltip"]').tooltip('hide');
             }
+
+            /**************************
+            Link of submit button
+            **************************/
+            button = document.getElementById('submit-vote');
+            if(value/max*100 <= 100){
+                button.setAttribute('data-target', '#SubmitModal');
+            }
+            else{
+                button.setAttribute('data-target', '#ErrorModal');
+            }
+
         }
     </script>
 
