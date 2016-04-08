@@ -1,4 +1,5 @@
-from django.shortcuts import render
+# coding: utf-8
+
 from django.views import generic
 from project.models import Project, SubProject, PROJECT_STATUS_CHOICES
 from project.forms import ProjectsForm, SubProjectsForm
@@ -6,6 +7,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 
 class ProjectDetail(generic.DetailView):
@@ -84,6 +86,11 @@ class ProjectCreate(generic.CreateView):
         return super(ProjectCreate, self).form_valid(form)
 
     def get_success_url(self):
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Le projet à bien été soumis!'
+        )
         return self.object.get_absolute_url()
 
 
@@ -100,6 +107,11 @@ class SubProjectCreate(generic.CreateView):
         return super(SubProjectCreate, self).form_valid(form)
 
     def get_success_url(self):
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Le sous-projet à bien été ajouté!'
+        )
         return self.object.get_absolute_url()
 
 
@@ -108,6 +120,11 @@ def accept_project(request, id_of_project):
     project.status = PROJECT_STATUS_CHOICES[1][0]
     project.save(update_fields=['status'])
 
+    messages.add_message(
+        request,
+        messages.SUCCESS,
+        'Le projet à bien été accepté!'
+    )
     return redirect(reverse_lazy("projects:project_detail", args=[project.id]))
 
 
@@ -116,4 +133,9 @@ def refuse_project(request, id_of_project):
     project.status = PROJECT_STATUS_CHOICES[2][0]
     project.save(update_fields=['status'])
 
+    messages.add_message(
+        request,
+        messages.WARNING,
+        'Le projet a été refusé!'
+    )
     return redirect(reverse_lazy("projects:project_detail", args=[project.id]))

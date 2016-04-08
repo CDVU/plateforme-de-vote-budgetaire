@@ -13,6 +13,7 @@ from django.http import HttpResponseRedirect
 import random
 import datetime
 from django.utils import timezone
+from django.contrib import messages
 
 
 def home(request):
@@ -29,6 +30,11 @@ def mission(request):
 
 def logout_view(request):
     logout(request)
+    messages.add_message(
+        request,
+        messages.WARNING,
+        'Vous avez été déconnecté!'
+    )
     # Redirect to a success page.
     return HttpResponseRedirect("/")
 
@@ -67,6 +73,12 @@ class Register(CreateView):
 
         # Send activation email
         self.send_courriel(self.object, generate_hash)
+
+        messages.add_message(
+            request,
+            messages.INFO,
+            "Un courriel vient de vous être envoyé afin de valider votre inscription!"
+        )
 
         return reverse_lazy("pages:home")
 
