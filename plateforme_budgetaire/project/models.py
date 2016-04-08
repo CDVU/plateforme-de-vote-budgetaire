@@ -118,4 +118,7 @@ class SubProject(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse_lazy('projects:project_detail', args=[self.project.id])
+        return reverse_lazy(
+            'projects:project_detail',
+            args=[self.project.id]
+        )
