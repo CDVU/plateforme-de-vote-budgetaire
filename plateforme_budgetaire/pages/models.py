@@ -38,7 +38,9 @@ class Hash(models.Model):
     )
 
     def __str__(self):
-        return str(self.user) + ' - ' + str(self.action) + ' - ' + str(self.created)
+        return str(self.user) + ' - ' + \
+               str(self.action) + ' - ' + \
+               str(self.created)
 
     def save(self, *args, **kwarg):
         if not self.id:
