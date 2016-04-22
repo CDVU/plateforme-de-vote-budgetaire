@@ -7,7 +7,10 @@
 {% block content %}
     <div class="row">
         <div class="col-sm-8">
-            <h1>{{project.name}}</h1>
+            <h1>
+                {{project.name}}
+                <a class="btn btn-info" href='{% url "projects:project_update" project.id %}'>Modifier</a>
+            </h1>
         </div>
         <div class="col-sm-4 text-right">
             {% if status_id == 0 %}
