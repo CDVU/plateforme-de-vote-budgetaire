@@ -8,6 +8,8 @@ from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 
 class ProjectDetail(generic.DetailView):
@@ -116,6 +118,28 @@ class SubProjectCreate(generic.CreateView):
             'Le sous-projet à bien été ajouté!'
         )
         return self.object.get_absolute_url()
+
+
+class ProjectUpdate(generic.UpdateView):
+    # For update a grants
+    model = Project
+    form_class = ProjectsForm
+    template_name = "project/project_form.html"
+
+    # You need to be connected, and you need to have access
+    # as founder or Centech
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        self.object = self.get_object()
+        project = get_object_or_404(Project, id=self.object.id)
+        if project.creator == self.request.user:
+            return super(ProjectUpdate, self).dispatch(*args, **kwargs)
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'projects:project_detail',
+            kwargs={'pk': self.object.id}
+        )
 
 
 def accept_project(request, id_of_project):

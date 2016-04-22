@@ -29,6 +29,11 @@ urlpatterns = patterns(
         SubProjectCreate.as_view(),
         name='subproject_create'
     ),
+    url(
+        r'^(?P<pk>\d+)/update/$',
+        ProjectUpdate.as_view(),
+        name='project_update'
+    ),
 
     # Function
     url(
