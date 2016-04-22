@@ -29,6 +29,11 @@ urlpatterns = patterns(
         SubProjectCreate.as_view(),
         name='subproject_create'
     ),
+    url(
+        r'^subDelete/(?P<subProjectID>\d+)$',
+        SubProjectDelete.as_view(),
+        name='subproject_delete'
+    ),
 
     # Function
     url(

@@ -1,0 +1,17 @@
+{% extends "landing_base.html" %}
+
+{% block extrajs %}
+
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <strong>Êtes-vous sûr de vouloir supprimer le sous-projet "{{subProject.name}}" du projet "{{subProject.project}}" ? </strong>
+            <form method="post" action="">
+                {% csrf_token %}
+                <button class="btn btn-danger" type="submit" >Oui</button>
+                <a class="btn btn-warning" href='{% url "projects:project_detail" subProject.project.id %}'>Non</a>
+            </form>
+        </div>
+    </div>
+{% endblock %}

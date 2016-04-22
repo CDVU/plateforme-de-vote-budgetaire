@@ -5,6 +5,7 @@ from project.models import Project, SubProject, PROJECT_STATUS_CHOICES
 from project.forms import ProjectsForm, SubProjectsForm
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -114,6 +115,44 @@ class SubProjectCreate(generic.CreateView):
             self.request,
             messages.SUCCESS,
             'Le sous-projet à bien été ajouté!'
+        )
+        return self.object.get_absolute_url()
+
+
+class SubProjectDelete(generic.DeleteView):
+    form_class = SubProjectsForm
+    context_object_name = 'subProject'
+    template_name = 'project/subproject_delete.html'
+    model = SubProject
+    pk_url_kwarg = 'subProjectID'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        subproject = get_object_or_404(
+            SubProject,
+            id=self.kwargs['subProjectID']
+        )
+        is_creator = self.request.user == subproject.project.creator
+        is_staff = self.request.user.is_staff
+
+        if is_staff or is_creator:
+            return super(SubProjectDelete, self).dispatch(*args, **kwargs)
+        else:
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                'Vous ne disposer des droits nécessaire'
+                ' afin de supprimer ce sous-projet!'
+            )
+            return redirect(reverse_lazy(
+                "projects:project_list"
+            ))
+
+    def get_success_url(self):
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            'Le sous-projet à bien été supprimé!'
         )
         return self.object.get_absolute_url()
 
