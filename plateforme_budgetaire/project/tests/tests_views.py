@@ -102,7 +102,10 @@ class ProjectDetailViewTests(TestCase):
         )
 
         result = self.client.get(
-            reverse('projects:project_detail', kwargs={'pk': self.project.id}),
+            reverse(
+                'projects:project_detail',
+                kwargs={'pk': self.project.id}
+            ),
             follow=False
         )
 

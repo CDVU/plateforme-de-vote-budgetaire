@@ -1,6 +1,7 @@
 # coding: utf-8
 
-import factory, datetime
+import factory
+import datetime
 from project.models import Project, SubProject, PROJECT_STATUS_CHOICES
 
 
