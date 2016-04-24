@@ -18,7 +18,6 @@ class ProjectDetail(generic.DetailView):
     template_name = 'project/project_detail.html'
 
     def dispatch(self, *args, **kwargs):
-        print kwargs['pk']
         return super(ProjectDetail, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):

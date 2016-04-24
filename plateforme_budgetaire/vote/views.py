@@ -57,7 +57,6 @@ class Form(generic.TemplateView):
                                        str(elem_id) +
                                        '-amount'])
         if amount > vote.amount:
-            print 'titi'
             messages.add_message(
                 request,
                 messages.ERROR,
@@ -66,8 +65,6 @@ class Form(generic.TemplateView):
             )
             response = reverse('votes:form')
             return HttpResponseRedirect(response)
-        else:
-            print 'toto'
 
         # Create the poll
         poll = Poll.objects.create(vote=vote)
