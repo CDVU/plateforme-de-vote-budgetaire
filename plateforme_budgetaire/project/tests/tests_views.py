@@ -27,6 +27,10 @@ class ProjectListViewTests(TestCase):
         self.sub_project_1 = SubProjectFactory(project=self.project)
         self.sub_project_2 = SubProjectFactory(project=self.project)
 
+        self.project_2 = ProjectFactory(creator=self.admin)
+        self.sub_project_3 = SubProjectFactory(project=self.project_2)
+        self.sub_project_4 = SubProjectFactory(project=self.project_2)
+
     def test_access_as_user(self):
         self.client.logout()
         self.client.login(
@@ -40,6 +44,7 @@ class ProjectListViewTests(TestCase):
         )
 
         self.assertEqual(result.status_code, 200)
+        self.assertEqual(1, len(result.context['projects']))
 
     def test_access_as_admin(self):
         self.client.logout()
@@ -54,6 +59,7 @@ class ProjectListViewTests(TestCase):
         )
 
         self.assertEqual(result.status_code, 200)
+        self.assertEqual(2, len(result.context['projects']))
 
     def test_access_as_logout(self):
         self.client.logout()
@@ -149,7 +155,6 @@ class ProjectDetailViewTests(TestCase):
             password="passAdmin"
         )
 
-        # list of projects.
         result = self.client.get(
             reverse(
                 'projects:project_detail',
@@ -163,7 +168,6 @@ class ProjectDetailViewTests(TestCase):
     def test_access_as_logout(self):
         self.client.logout()
 
-        # list of companies.
         result = self.client.get(
             reverse(
                 'projects:project_detail',
