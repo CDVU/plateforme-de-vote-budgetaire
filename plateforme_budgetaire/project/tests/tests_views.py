@@ -276,3 +276,117 @@ class ProjectCreateViewTests(TestCase):
             follow=False
         )
         self.assertEqual(result.status_code, 200)
+
+
+class SubProjectCreateViewTests(TestCase):
+
+    def setUp(self):
+        settings.EMAIL_BACKEND = \
+            'django.core.mail.backends.locmem.EmailBackend'
+
+        self.user = User.objects.create_user(
+            username='am56680@ens.etsmtl.ca',
+            email='am56680@ens.etsmtl.ca',
+            password='passUser'
+        )
+        self.admin = User.objects.create_superuser(
+            username='admin',
+            email='rignon.noel@openmailbox.org',
+            password='passAdmin'
+        )
+
+        self.project = ProjectFactory(creator=self.user)
+        self.sub_project_1 = SubProjectFactory(project=self.project)
+        self.sub_project_2 = SubProjectFactory(project=self.project)
+
+    def test_access_as_user(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:subproject_create',
+                kwargs={'projectID': self.project.id}
+            ),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 200)
+
+    def test_access_as_admin(self):
+        self.client.logout()
+        self.client.login(
+            username=self.admin.username,
+            password="passAdmin"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:subproject_create',
+                kwargs={'projectID': self.project.id}
+            ),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 200)
+
+    def test_access_as_logout(self):
+        self.client.logout()
+
+        result = self.client.get(
+            reverse(
+                'projects:subproject_create',
+                kwargs={'projectID': self.project.id}
+            ),
+            follow=False
+        )
+        self.assertEqual(result.status_code, 302)
+
+    def test_add_a_subproject(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        data = {
+            'name': 'Nouveau projet',
+            'description': 'Ma description',
+            'completion_time': datetime.timedelta(1157, 35200),
+            'minimum_amount': 1000,
+            'maximum_amount': 2000,
+        }
+
+        result = self.client.post(
+            reverse(
+                'projects:subproject_create',
+                kwargs={'projectID': self.project.id}
+            ),
+            data,
+            follow=False
+        )
+        self.assertEqual(result.status_code, 302)
+
+    def test_missing_fields_when_add_a_subproject(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        data = {
+            'name': 'Nouveau sous-projet'
+        }
+
+        result = self.client.post(
+            reverse(
+                'projects:subproject_create',
+                kwargs={'projectID': self.project.id}
+            ),
+            data,
+            follow=False
+        )
+        self.assertEqual(result.status_code, 200)
