@@ -390,3 +390,166 @@ class SubProjectCreateViewTests(TestCase):
             follow=False
         )
         self.assertEqual(result.status_code, 200)
+
+
+class ProjectUpdateViewTests(TestCase):
+
+    def setUp(self):
+        settings.EMAIL_BACKEND = \
+            'django.core.mail.backends.locmem.EmailBackend'
+
+        self.user = User.objects.create_user(
+            username='am56680@ens.etsmtl.ca',
+            email='am56680@ens.etsmtl.ca',
+            password='passUser'
+        )
+        self.user_2 = User.objects.create_user(
+            username='ak12345@ens.etsmtl.ca',
+            email='ak12345@ens.etsmtl.ca',
+            password='passUser'
+        )
+        self.admin = User.objects.create_superuser(
+            username='admin',
+            email='rignon.noel@openmailbox.org',
+            password='passAdmin'
+        )
+
+        self.project = ProjectFactory(creator=self.user)
+        self.sub_project_1 = SubProjectFactory(project=self.project)
+        self.sub_project_2 = SubProjectFactory(project=self.project)
+
+        self.project_2 = ProjectFactory(creator=self.user_2)
+        self.sub_project_3 = SubProjectFactory(project=self.project_2)
+        self.sub_project_4 = SubProjectFactory(project=self.project_2)
+
+    def test_access_as_user(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:project_update',
+                kwargs={'pk': self.project.id}
+            ),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 200)
+
+    def test_access_as_admin(self):
+        self.client.logout()
+        self.client.login(
+            username=self.admin.username,
+            password="passAdmin"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:project_update',
+                kwargs={'pk': self.project.id}
+            ),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 200)
+
+    def test_user_not_owner_on_project(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:project_update',
+                kwargs={'pk': self.project_2.id}
+            ),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 302)
+
+    def test_access_as_logout(self):
+        self.client.logout()
+
+        result = self.client.get(
+            reverse(
+                'projects:project_update',
+                kwargs={'pk': self.project.id}
+            ),
+            follow=False
+        )
+        self.assertEqual(result.status_code, 302)
+
+    def test_update_a_project(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        data = {
+            'name': 'Ancien projet',
+            'description': 'Ancienne description',
+            'number_affected_by': '359',
+            'justification': 'Ancienne justification',
+            'completion_time': datetime.timedelta(1157, 35400),
+            'date_of_submission': datetime.datetime(2016, 5, 8, 14, 41, 39),
+            'author_name': 'Rignon Noël',
+            'author_website': 'http://duckduckgo.com',
+            'author_description': 'Étudiant en génie',
+        }
+
+        result = self.client.post(
+            reverse(
+                'projects:project_update',
+                kwargs={'pk': self.project.id}
+            ),
+            data,
+            follow=False
+        )
+        self.assertEqual(result.status_code, 302)
+
+    def test_update_just_one_field_of_project(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        data = {
+            'name': 'Nouveau sous-projet'
+        }
+
+        result = self.client.post(
+            reverse(
+                'projects:project_update',
+                kwargs={'pk': self.project.id}
+            ),
+            data,
+            follow=False
+        )
+        self.assertEqual(result.status_code, 200)
+
+    def test_update_no_field_of_project(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        data = {}
+
+        result = self.client.post(
+            reverse(
+                'projects:project_update',
+                kwargs={'pk': self.project.id}
+            ),
+            data,
+            follow=False
+        )
+        self.assertEqual(result.status_code, 200)
