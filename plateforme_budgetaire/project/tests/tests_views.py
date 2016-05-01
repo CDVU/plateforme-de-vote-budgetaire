@@ -289,6 +289,11 @@ class SubProjectCreateViewTests(TestCase):
             email='am56680@ens.etsmtl.ca',
             password='passUser'
         )
+        self.user_2 = User.objects.create_user(
+            username='ak12345@ens.etsmtl.ca',
+            email='ak12345@ens.etsmtl.ca',
+            password='passUser'
+        )
         self.admin = User.objects.create_superuser(
             username='admin',
             email='rignon.noel@openmailbox.org',
@@ -298,6 +303,10 @@ class SubProjectCreateViewTests(TestCase):
         self.project = ProjectFactory(creator=self.user)
         self.sub_project_1 = SubProjectFactory(project=self.project)
         self.sub_project_2 = SubProjectFactory(project=self.project)
+
+        self.project_2 = ProjectFactory(creator=self.user_2)
+        self.sub_project_3 = SubProjectFactory(project=self.project_2)
+        self.sub_project_4 = SubProjectFactory(project=self.project_2)
 
     def test_access_as_user(self):
         self.client.logout()
@@ -332,6 +341,23 @@ class SubProjectCreateViewTests(TestCase):
         )
 
         self.assertEqual(result.status_code, 200)
+
+    def test_user_not_owner_on_project(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:project_update',
+                kwargs={'pk': self.project_2.id}
+            ),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 302)
 
     def test_access_as_logout(self):
         self.client.logout()
