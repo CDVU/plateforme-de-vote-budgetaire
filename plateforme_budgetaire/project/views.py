@@ -199,32 +199,56 @@ class SubProjectDelete(generic.DeleteView):
 
 
 def accept_project(request, id_of_project):
-    project = Project.objects.get(id=id_of_project)
-    project.status = PROJECT_STATUS_CHOICES[1][0]
-    project.save(update_fields=['status'])
+    if request.user.is_staff:
+        project = get_object_or_404(Project, id=id_of_project)
+        project.status = PROJECT_STATUS_CHOICES[1][0]
+        project.save(update_fields=['status'])
 
-    messages.add_message(
-        request,
-        messages.SUCCESS,
-        'Le projet à bien été accepté!'
-    )
-    return redirect(reverse_lazy(
-        "projects:project_detail",
-        args=[project.id]
-    ))
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Le projet à bien été accepté!'
+        )
+        return redirect(reverse_lazy(
+            "projects:project_detail",
+            args=[project.id]
+        ))
+
+    else:
+        messages.add_message(
+            request,
+            messages.ERROR,
+            "Vous ne disposer pas des droits nécessaire "
+            "afin d'effectuer cette action sur ce projet!"
+        )
+        return redirect(reverse_lazy(
+            "projects:project_list"
+        ))
 
 
 def refuse_project(request, id_of_project):
-    project = Project.objects.get(id=id_of_project)
-    project.status = PROJECT_STATUS_CHOICES[2][0]
-    project.save(update_fields=['status'])
+    if request.user.is_staff:
+        project = get_object_or_404(Project, id=id_of_project)
+        project.status = PROJECT_STATUS_CHOICES[2][0]
+        project.save(update_fields=['status'])
 
-    messages.add_message(
-        request,
-        messages.WARNING,
-        'Le projet a été refusé!'
-    )
-    return redirect(reverse_lazy(
-        "projects:project_detail",
-        args=[project.id]
-    ))
+        messages.add_message(
+            request,
+            messages.WARNING,
+            'Le projet a été refusé!'
+        )
+        return redirect(reverse_lazy(
+            "projects:project_detail",
+            args=[project.id]
+        ))
+
+    else:
+        messages.add_message(
+            request,
+            messages.ERROR,
+            "Vous ne disposer pas des droits nécessaire "
+            "afin d'effectuer cette action sur ce projet!"
+        )
+        return redirect(reverse_lazy(
+            "projects:project_list"
+        ))
