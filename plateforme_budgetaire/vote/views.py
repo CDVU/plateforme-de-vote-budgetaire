@@ -9,14 +9,20 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
+from django.shortcuts import get_object_or_404
 
 
-class Form(generic.TemplateView):
+class Form(generic.DetailView):
+    model = Vote
     template_name = 'vote/form.html'
 
     @method_decorator(login_required())
     def dispatch(self, request, *args, **kwargs):
-        vote = Vote.objects.latest('id')
+        vote = get_object_or_404(
+            Vote,
+            id=self.kwargs['pk']
+        )
+
         if request.user in vote.users.all():
             messages.add_message(
                 request,
@@ -29,13 +35,8 @@ class Form(generic.TemplateView):
         else:
             return super(Form, self).dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super(Form, self).get_context_data(**kwargs)
-        context['vote'] = Vote.objects.latest('id')
-        return context
-
     def post(self, request, *args, **kwargs):
-        vote = Vote.objects.latest('id')
+        vote = Vote.objects.get(id=kwargs['pk'])
         project_list = []
 
         # List accepted project
