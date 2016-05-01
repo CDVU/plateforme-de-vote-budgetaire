@@ -139,19 +139,31 @@ class SubProjectCreate(generic.CreateView):
 
 
 class ProjectUpdate(generic.UpdateView):
-    # For update a grants
     model = Project
     form_class = ProjectsForm
     template_name = "project/project_form.html"
 
-    # You need to be connected, and you need to have access
-    # as founder or Centech
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        self.object = self.get_object()
-        project = get_object_or_404(Project, id=self.object.id)
-        if project.creator == self.request.user:
+        project = get_object_or_404(
+            Project,
+            id=self.kwargs['pk']
+        )
+        is_creator = self.request.user == project.creator
+        is_staff = self.request.user.is_staff
+
+        if is_staff or is_creator:
             return super(ProjectUpdate, self).dispatch(*args, **kwargs)
+        else:
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                'Vous ne disposer des droits nécessaire'
+                ' afin de modifier ce projet!'
+            )
+            return redirect(reverse_lazy(
+                "projects:project_list"
+            ))
 
     def get_success_url(self):
         return reverse_lazy(
