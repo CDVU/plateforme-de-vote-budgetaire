@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
 
 
 class Form(generic.TemplateView):
@@ -23,7 +24,7 @@ class Form(generic.TemplateView):
                 'Vous avez déjà voté sur cette session de vote.'
             )
 
-            response = reverse('pages:home')
+            response = reverse('votes:home')
             return HttpResponseRedirect(response)
         else:
             return super(Form, self).dispatch(request, *args, **kwargs)
@@ -88,5 +89,31 @@ class Form(generic.TemplateView):
             'Votre vote a été pris en compte. Nous vous remercions de '
             'votre participation.'
         )
-        response = reverse('pages:home')
+        response = reverse('votes:home')
         return HttpResponseRedirect(response)
+
+
+class Home(generic.TemplateView):
+    template_name = 'vote/home.html'
+
+    @method_decorator(login_required())
+    def dispatch(self, request, *args, **kwargs):
+        return super(Home, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(Home, self).get_context_data(**kwargs)
+
+        list_vote = []
+
+        votes = Vote.objects.filter(
+            start_date__lt=datetime.now(),
+            end_date__gt=datetime.now()
+        ).order_by('-start_date')
+
+        for vote in votes:
+            has_voted = self.request.user in vote.users.all()
+            list_vote.append((vote, has_voted))
+
+        context['votes'] = list_vote
+
+        return context

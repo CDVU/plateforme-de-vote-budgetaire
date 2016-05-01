@@ -34,7 +34,7 @@
                         <li><a href="{% url 'pages:home'%}">Accueil</a></li>
                         {% if user.username %}
                         <li><a href="{% url 'projects:project_list'%}">Liste des projets</a></li>
-                        <li><a href="{% url 'votes:form'%}">Formulaire de vote</a></li>
+                        <li><a href="{% url 'votes:home'%}">Système de vote</a></li>
                         {% endif %}
                         <li><a href="{% url 'pages:mission'%}">Notre mission</a></li>
                         <li><a href="{% url 'pages:contact'%}">Contact</a></li>
