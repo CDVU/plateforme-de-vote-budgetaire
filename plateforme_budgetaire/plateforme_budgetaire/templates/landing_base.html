@@ -32,8 +32,10 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
                         <li><a href="{% url 'pages:home'%}">Accueil</a></li>
+                        {% if user.username %}
                         <li><a href="{% url 'projects:project_list'%}">Liste des projets</a></li>
                         <li><a href="{% url 'votes:form'%}">Formulaire de vote</a></li>
+                        {% endif %}
                         <li><a href="{% url 'pages:mission'%}">Notre mission</a></li>
                         <li><a href="{% url 'pages:contact'%}">Contact</a></li>
                     </ul>
