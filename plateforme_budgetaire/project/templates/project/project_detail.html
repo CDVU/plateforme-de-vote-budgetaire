@@ -13,13 +13,15 @@
             </h1>
         </div>
         <div class="col-sm-4 text-right">
-            {% if status_id == 0 %}
-            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#AcceptModal">
-              Accepter le projet
-            </button>
-            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#RefuseModal">
-              Refuser le projet
-            </button>
+            {% if user.is_staff %}
+                {% if status_id == 0 %}
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#AcceptModal">
+                  Accepter le projet
+                </button>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#RefuseModal">
+                  Refuser le projet
+                </button>
+                {% endif %}
             {% endif %}
         </div>
     </div>
