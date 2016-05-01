@@ -17,7 +17,7 @@
             </div>
 
             <!-- CONTENT -->
-            <form method="post" action='{% url "votes:form" %}'>{% csrf_token%}
+            <form method="post" action='{% url "votes:form" vote.id %}'>{% csrf_token%}
                 <div class="col-sm-9">
                     {% for project in vote.projects.all %}
                     {% if forloop.first %}
