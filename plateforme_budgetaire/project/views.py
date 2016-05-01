@@ -19,7 +19,25 @@ class ProjectDetail(generic.DetailView):
     template_name = 'project/project_detail.html'
 
     def dispatch(self, *args, **kwargs):
-        return super(ProjectDetail, self).dispatch(*args, **kwargs)
+        project = get_object_or_404(
+            Project,
+            id=self.kwargs['pk']
+        )
+        is_creator = self.request.user == project.creator
+        is_staff = self.request.user.is_staff
+
+        if is_staff or is_creator:
+            return super(ProjectDetail, self).dispatch(*args, **kwargs)
+        else:
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                'Vous ne disposer pas des droits nécessaire'
+                ' afin de voir ce projet!'
+            )
+            return redirect(reverse_lazy(
+                "projects:project_list"
+            ))
 
     def get_context_data(self, **kwargs):
         context = super(ProjectDetail, self).get_context_data(**kwargs)
