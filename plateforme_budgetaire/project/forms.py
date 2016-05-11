@@ -45,6 +45,11 @@ class ProjectsForm(forms.ModelForm):
                                    u"communauté"
                 }
             ),
+            'completion_time': forms.TextInput(
+                attrs={
+                    'placeholder': u"ex: 1 mois, 1 an, 1an et 6 mois"
+                }
+            ),
         }
 
 
@@ -68,12 +73,9 @@ class SubProjectsForm(forms.ModelForm):
                                    u".."
                 }
             ),
-            'completion_time': forms.NumberInput(
+            'completion_time': forms.TextInput(
                 attrs={
-                    'placeholder': u"Justifiez ici la raison pour laquelle "
-                                   u"votre sous-projet devrais être "
-                                   u"supporter par le CDVU et ce qu'il "
-                                   u"apporte à la communauté"
+                    'placeholder': u"ex: 1 mois, 1 an, 1an et 6 mois"
                 }
             ),
             'minimum_amount': forms.NumberInput(
