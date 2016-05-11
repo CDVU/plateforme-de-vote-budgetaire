@@ -9,7 +9,7 @@
         <div class="col-sm-8">
             <h1>
                 {{project.name}}
-                <a class="btn btn-info" href='{% url "projects:project_update" project.id %}'>Modifier</a>
+                <a class="btn btn-info" href='{% url "projects:project_update" project.id %}'>Modifier <i class="fa fa-pencil"></i></a>
             </h1>
         </div>
         <div class="col-sm-4 text-right">
@@ -56,13 +56,16 @@
 
     <div class="row" id="sub-project">
         <div class="col-sm-12">
-            <a class="btn btn-success pull-right" href='{% url "projects:subproject_create" project.id %}' role="button" >Ajouter sous-projet</a>
+            <a class="btn-sm btn-success pull-right" href='{% url "projects:subproject_create" project.id %}' role="button" >Ajouter <i class="fa fa-plus-square"></i></a>
             <h2>Sous-projets : </h2>
             {% for subProject in project.SubProject.all %}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <a class="btn-xs btn-danger pull-right" href='{% url "projects:subproject_delete" subProject.id %}' role="button" >X</a>
                     <h4 class="panel-title">
+                        <span class="pull-right">
+                            <a class="btn-xs btn-warning" href='{% url "projects:subproject_update" subProject.id %}' role="button" ><i class="fa fa-pencil"></i></a>
+                            <a class="btn-xs btn-danger" href='{% url "projects:subproject_delete" subProject.id %}' role="button" ><i class="fa fa-trash"></i></a>
+                        </span>
                         {{ subProject.name }}
                     </h4>
                 </div>

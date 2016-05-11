@@ -172,6 +172,44 @@ class ProjectUpdate(generic.UpdateView):
         )
 
 
+class SubProjectUpdate(generic.UpdateView):
+    # For update a grants
+    model = SubProject
+    form_class = SubProjectsForm
+    template_name = "project/subproject_form.html"
+    pk_url_kwarg = 'pk'
+
+    # You need to be connected, and you need to have access
+    # as founder or Centech
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        subproject = get_object_or_404(
+            SubProject,
+            id=self.kwargs['pk']
+        )
+        is_creator = self.request.user == subproject.project.creator
+        is_staff = self.request.user.is_staff
+        if is_staff or is_creator:
+            return super(SubProjectUpdate, self).dispatch(*args, **kwargs)
+
+        else:
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                'Vous ne disposer des droits nécessaire'
+                ' afin de modifier ce sous-projet!'
+            )
+            return redirect(reverse_lazy(
+                "projects:project_list"
+            ))
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'projects:project_detail',
+            kwargs={'pk': self.object.project.id}
+        )
+
+
 class SubProjectDelete(generic.DeleteView):
     form_class = SubProjectsForm
     context_object_name = 'subProject'
