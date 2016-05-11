@@ -35,7 +35,8 @@ class Project(models.Model):
         verbose_name='Justification'
     )
 
-    completion_time = models.DurationField(
+    completion_time = models.CharField(
+        max_length=100,
         verbose_name='Temps de réalisation'
     )
 
@@ -96,7 +97,8 @@ class SubProject(models.Model):
         verbose_name='Description'
     )
 
-    completion_time = models.DurationField(
+    completion_time = models.CharField(
+        max_length=100,
         verbose_name='Temps de réalisation'
     )
 
