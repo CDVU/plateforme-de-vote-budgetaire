@@ -6,14 +6,18 @@
 
 {% block content %}
     <div class="row">
-        <p>
-            <strong>Êtes-vous sûr de vouloir supprimer le projet "{{project.name}}" ? </strong>
-        </p>
-
-        <form method="post" action="">
-            {% csrf_token %}
-            <button class="btn btn-danger" type="submit" >Oui</button>
-            <a class="btn btn-warning" href='{% url "projects:project_detail" project.id %}'>Non</a>
-        </form>
+        <div class="panel panel-danger">
+            <div class="panel-heading">
+                <h4>{{project.name}}</h4>
+            </div>
+            <div class="panel-body">
+                <strong>Êtes-vous sûr de vouloir supprimer le projet "{{project.name}}" ? </strong>
+                <form method="post" action="" class="text-right">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit" >Oui</button>
+                    <a class="btn btn-warning" href='{% url "projects:project_detail" project.id %}'>Non</a>
+                </form>
+            </div>
+        </div>
     </div>
 {% endblock %}
