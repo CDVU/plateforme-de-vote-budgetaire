@@ -16,3 +16,6 @@ install:
 script:
   - coverage run --omit=*.virtualenvs*,*virtualenv* plateforme_budgetaire/manage.py test plateforme_budgetaire/
   - pep8 --count --show-source --exclude=migrations,plateforme_budgetaire/plateforme_budgetaire,manage.py plateforme_budgetaire/
+
+after_success:
+  coveralls
