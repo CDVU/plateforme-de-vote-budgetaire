@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.urlresolvers import reverse
 import datetime
-from project.models import Project
+from project.models import Project, PROJECT_STATUS_CHOICES
 
 
 class ProjectListViewTests(TestCase):
@@ -860,4 +860,272 @@ class ProjectDeleteViewTests(TestCase):
             follow=False
         )
 
+        self.assertEqual(result.status_code, 302)
+
+
+class AcceptProjectViewTests(TestCase):
+
+    def setUp(self):
+        settings.EMAIL_BACKEND = \
+            'django.core.mail.backends.locmem.EmailBackend'
+
+        self.user = User.objects.create_user(
+            username='am56680@ens.etsmtl.ca',
+            email='am56680@ens.etsmtl.ca',
+            password='passUser'
+        )
+        self.user_2 = User.objects.create_user(
+            username='ak12345@ens.etsmtl.ca',
+            email='ak12345@ens.etsmtl.ca',
+            password='passUser'
+        )
+        self.admin = User.objects.create_superuser(
+            username='admin',
+            email='rignon.noel@openmailbox.org',
+            password='passAdmin'
+        )
+        self.project = ProjectFactory(creator=self.user)
+        self.sub_project_1 = SubProjectFactory(project=self.project)
+        self.sub_project_2 = SubProjectFactory(project=self.project)
+
+        self.project_2 = ProjectFactory(creator=self.user_2)
+        self.sub_project_1 = SubProjectFactory(project=self.project_2)
+        self.sub_project_2 = SubProjectFactory(project=self.project_2)
+
+    def test_access_as_user(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:project_accept',
+                kwargs={'pk': self.project.id}
+            ),
+            follow=True
+        )
+
+        # Status of project is the same
+        self.assertEqual(
+            PROJECT_STATUS_CHOICES[0][0],
+            self.project.status
+        )
+
+        # Redirection on the good project
+        self.assertRedirects(
+            result,
+            reverse(
+                'projects:project_detail',
+                kwargs={'pk': self.project.id}
+            ),
+            status_code=302
+        )
+
+    def test_access_on_project_inexistant(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        result = self.client.get(
+            reverse('projects:project_accept', kwargs={'pk': 99999}),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 404)
+
+    def test_access_as_admin(self):
+        self.client.logout()
+        self.client.login(
+            username=self.admin.username,
+            password="passAdmin"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:project_accept',
+                kwargs={'pk': self.project.id}
+            ),
+            follow=True
+        )
+
+        project_tested = Project.objects.get(id=self.project.id)
+
+        # Status of project has change
+        self.assertEqual(
+            PROJECT_STATUS_CHOICES[1][0],
+            project_tested.status
+        )
+
+        # Validation message is display
+        self.assertContains(
+            result,
+            "Le projet à bien été accepté!"
+        )
+
+        # Redirection on the good project
+        self.assertRedirects(
+            result,
+            reverse(
+                'projects:project_detail',
+                kwargs={'pk': self.project.id}
+            ),
+            status_code=302
+        )
+
+    def test_access_as_logout(self):
+        self.client.logout()
+
+        result = self.client.get(
+            reverse(
+                'projects:project_accept',
+                kwargs={'pk': self.project.id}
+            ),
+            follow=False
+        )
+
+        # Status of project no change
+        self.assertEqual(
+            PROJECT_STATUS_CHOICES[0][0],
+            self.project.status
+        )
+
+        # Redirection on login page
+        self.assertEqual(result.status_code, 302)
+
+
+class RefuseProjectViewTests(TestCase):
+
+    def setUp(self):
+        settings.EMAIL_BACKEND = \
+            'django.core.mail.backends.locmem.EmailBackend'
+
+        self.user = User.objects.create_user(
+            username='am56680@ens.etsmtl.ca',
+            email='am56680@ens.etsmtl.ca',
+            password='passUser'
+        )
+        self.user_2 = User.objects.create_user(
+            username='ak12345@ens.etsmtl.ca',
+            email='ak12345@ens.etsmtl.ca',
+            password='passUser'
+        )
+        self.admin = User.objects.create_superuser(
+            username='admin',
+            email='rignon.noel@openmailbox.org',
+            password='passAdmin'
+        )
+        self.project = ProjectFactory(creator=self.user)
+        self.sub_project_1 = SubProjectFactory(project=self.project)
+        self.sub_project_2 = SubProjectFactory(project=self.project)
+
+        self.project_2 = ProjectFactory(creator=self.user_2)
+        self.sub_project_1 = SubProjectFactory(project=self.project_2)
+        self.sub_project_2 = SubProjectFactory(project=self.project_2)
+
+    def test_access_as_user(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:project_refuse',
+                kwargs={'pk': self.project.id}
+            ),
+            follow=True
+        )
+
+        # Status of project is the same
+        self.assertEqual(
+            PROJECT_STATUS_CHOICES[0][0],
+            self.project.status
+        )
+
+        # Redirection on the good project
+        self.assertRedirects(
+            result,
+            reverse(
+                'projects:project_detail',
+                kwargs={'pk': self.project.id}
+            ),
+            status_code=302
+        )
+
+    def test_access_on_project_inexistant(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        result = self.client.get(
+            reverse('projects:project_refuse', kwargs={'pk': 99999}),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 404)
+
+    def test_access_as_admin(self):
+        self.client.logout()
+        self.client.login(
+            username=self.admin.username,
+            password="passAdmin"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:project_refuse',
+                kwargs={'pk': self.project.id}
+            ),
+            follow=True
+        )
+
+        project_tested = Project.objects.get(id=self.project.id)
+
+        # Status of project has change
+        self.assertEqual(
+            PROJECT_STATUS_CHOICES[2][0],
+            project_tested.status
+        )
+
+        # Validation message is display
+        self.assertContains(
+            result,
+            "Le projet a été refusé!"
+        )
+
+        # Redirection on the good project
+        self.assertRedirects(
+            result,
+            reverse(
+                'projects:project_detail',
+                kwargs={'pk': self.project.id}
+            ),
+            status_code=302
+        )
+
+    def test_access_as_logout(self):
+        self.client.logout()
+
+        result = self.client.get(
+            reverse(
+                'projects:project_refuse',
+                kwargs={'pk': self.project.id}
+            ),
+            follow=False
+        )
+
+        # Status of project no change
+        self.assertEqual(
+            PROJECT_STATUS_CHOICES[0][0],
+            self.project.status
+        )
+
+        # Redirection on login page
         self.assertEqual(result.status_code, 302)
