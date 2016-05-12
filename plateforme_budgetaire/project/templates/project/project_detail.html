@@ -9,22 +9,43 @@
         <div class="col-sm-8">
             <h1>
                 {{project.name}}
-                <a class="btn btn-info" href='{% url "projects:project_update" project.id %}'>Modifier</a>
             </h1>
         </div>
-        <div class="col-sm-4 text-right">
-            {% if user.is_staff %}
-                {% if status_id == 0 or status_id == 2 %}
-                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#AcceptModal">
-                  Accepter le projet
+        <div class="col-sm-4">
+            <div class="dropdown pull-right">
+                <button class="btn btn-primary" type="button" id="dropdownMenuProject" data-toggle="dropdown">
+                    Administrer le projet
+                    <span class="caret"></span>
                 </button>
-                {% endif %}
-                {% if status_id == 0 or status_id == 1 %}
-                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#RefuseModal">
-                  Refuser le projet
-                </button>
-                {% endif %}
-            {% endif %}
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuProject">
+                    {% if user.is_staff %}
+                        {% if status_id == 0 or status_id == 2 %}
+                        <li>
+                            <a data-toggle="modal" data-target="#AcceptModal">
+                                <i class="fa fa-check"></i> Accepter le projet
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if status_id == 0 or status_id == 1 %}
+                        <li>
+                            <a data-toggle="modal" data-target="#RefuseModal">
+                                <i class="fa fa-times"></i>  Refuser le projet
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endif %}
+                    <li>
+                        <a href='{% url "projects:project_update" project.id %}'>
+                            <i class="fa fa-edit"></i> Modifier
+                        </a>
+                    </li>
+                    <li>
+                        <a href='{% url "projects:project_delete" project.id %}' >
+                            <i class="fa fa-trash"> Supprimer</i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     <hr>
