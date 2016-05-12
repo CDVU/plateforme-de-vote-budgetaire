@@ -210,6 +210,44 @@ class SubProjectDelete(generic.DeleteView):
         return self.object.get_absolute_url()
 
 
+class ProjectDelete(generic.DeleteView):
+    context_object_name = 'project'
+    template_name = 'project/project_delete.html'
+    model = Project
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        project = get_object_or_404(
+            Project,
+            id=self.kwargs['pk']
+        )
+        is_creator = self.request.user == project.creator
+        is_staff = self.request.user.is_staff
+
+        if is_staff or is_creator:
+            return super(ProjectDelete, self).dispatch(*args, **kwargs)
+        else:
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                'Vous ne disposer des droits nécessaire'
+                ' afin de supprimer ce projet!'
+            )
+            return redirect(reverse_lazy(
+                "projects:project_list"
+            ))
+
+    def get_success_url(self):
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            'Le projet à bien été supprimé!'
+        )
+        return reverse_lazy(
+            "projects:project_list"
+        )
+
+
 def accept_project(request, id_of_project):
     if request.user.is_staff:
         project = get_object_or_404(Project, id=id_of_project)
