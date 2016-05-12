@@ -260,57 +260,89 @@ class ProjectDelete(generic.DeleteView):
         )
 
 
-def accept_project(request, id_of_project):
-    if request.user.is_staff:
-        project = get_object_or_404(Project, id=id_of_project)
-        project.status = PROJECT_STATUS_CHOICES[1][0]
-        project.save(update_fields=['status'])
+class AcceptProject(generic.RedirectView):
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        self.project = get_object_or_404(
+            Project,
+            id=kwargs['pk']
+        )
+        is_staff = request.user.is_staff
+
+        if is_staff:
+            return super(AcceptProject, self).\
+                dispatch(request, *args, **kwargs)
+        else:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                "Vous ne disposer pas des droits nécessaire "
+                "afin d'effectuer cette action sur ce projet!"
+            )
+            return redirect(reverse_lazy(
+                "projects:project_detail",
+                args=[self.project.id]
+            ))
+
+    def get(self, request, *args, **kwargs):
+        self.project.status = PROJECT_STATUS_CHOICES[1][0]
+        self.project.save(update_fields=['status'])
 
         messages.add_message(
             request,
             messages.SUCCESS,
             'Le projet à bien été accepté!'
         )
-        return redirect(reverse_lazy(
+
+        return redirect(self.get_redirect_url(*args, **kwargs))
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse_lazy(
             "projects:project_detail",
-            args=[project.id]
-        ))
-
-    else:
-        messages.add_message(
-            request,
-            messages.ERROR,
-            "Vous ne disposer pas des droits nécessaire "
-            "afin d'effectuer cette action sur ce projet!"
+            args=[self.project.id]
         )
-        return redirect(reverse_lazy(
-            "projects:project_list"
-        ))
 
 
-def refuse_project(request, id_of_project):
-    if request.user.is_staff:
-        project = get_object_or_404(Project, id=id_of_project)
-        project.status = PROJECT_STATUS_CHOICES[2][0]
-        project.save(update_fields=['status'])
+class RefuseProject(generic.RedirectView):
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        self.project = get_object_or_404(
+            Project,
+            id=kwargs['pk']
+        )
+        is_staff = request.user.is_staff
+
+        if is_staff:
+            return super(RefuseProject, self).\
+                dispatch(request, *args, **kwargs)
+        else:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                "Vous ne disposer pas des droits nécessaire "
+                "afin d'effectuer cette action sur ce projet!"
+            )
+            return redirect(reverse_lazy(
+                "projects:project_detail",
+                args=[self.project.id]
+            ))
+
+    def get(self, request, *args, **kwargs):
+        self.project.status = PROJECT_STATUS_CHOICES[2][0]
+        self.project.save(update_fields=['status'])
 
         messages.add_message(
             request,
             messages.WARNING,
             'Le projet a été refusé!'
         )
-        return redirect(reverse_lazy(
-            "projects:project_detail",
-            args=[project.id]
-        ))
 
-    else:
-        messages.add_message(
-            request,
-            messages.ERROR,
-            "Vous ne disposer pas des droits nécessaire "
-            "afin d'effectuer cette action sur ce projet!"
+        return redirect(self.get_redirect_url(*args, **kwargs))
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse_lazy(
+            "projects:project_detail",
+            args=[self.project.id]
         )
-        return redirect(reverse_lazy(
-            "projects:project_list"
-        ))
