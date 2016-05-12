@@ -54,7 +54,7 @@
             </div><!-- /.container-fluid -->
         </nav>
 
-        <div class="row">
+        <div class="row" id="content">
             <div class="col-sm-offset-1 col-sm-10">
                 {% if messages %}
                     {% for message in messages %}
@@ -79,6 +79,20 @@
                 {% block content %}{% endblock %}
             </div>
         </div>
+
+        <footer id="footer" >
+            <div class="col-sm-4">
+                      Plateforme de vote budgetaire
+            </div>
+            <div class="col-sm-4 text-center">
+                <a style="color: black;" href="https://github.com/CDVU/plateforme-de-vote-budgetaire">
+                    <i class="fa fa-github fa-2x"></i>
+                </a>
+            </div>
+            <div class="col-sm-4 text-right">
+                Propulsé par <a href="https://github.com/RignonNoel/">@RignonNoel</a>
+            </div>
+        </footer>
 
         <script src="{% static 'jquery/jquery-2.2.2.min.js' %}" type="application/javascript"></script>
         <script src="{% static 'bootstrap-3.3.6-dist/js/bootstrap.min.js' %}" type="application/javascript"></script>
