@@ -2,6 +2,7 @@
 
 from django.test import TestCase
 from project.factories import ProjectFactory, SubProjectFactory
+from vote.factories import VoteFactory
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -654,6 +655,29 @@ class ProjectDeleteViewTests(TestCase):
             status_code=302
         )
 
+    def test_delete_as_user_project_in_vote(self):
+        project_to_delete = ProjectFactory(creator=self.user)
+        id_of_project = project_to_delete.id
+
+        vote = VoteFactory()
+        vote.projects.add(project_to_delete)
+
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        result = self.client.post(
+            reverse(
+                'projects:project_delete',
+                kwargs={'pk': id_of_project}
+            ),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 302)
+
     def test_access_as_admin(self):
         self.client.logout()
         self.client.login(
@@ -696,6 +720,29 @@ class ProjectDeleteViewTests(TestCase):
             reverse('projects:project_list'),
             status_code=302
         )
+
+    def test_delete_as_admin_project_in_vote(self):
+        project_to_delete = ProjectFactory(creator=self.user)
+        id_of_project = project_to_delete.id
+
+        vote = VoteFactory()
+        vote.projects.add(project_to_delete)
+
+        self.client.logout()
+        self.client.login(
+            username=self.admin.username,
+            password="passAdmin"
+        )
+
+        result = self.client.post(
+            reverse(
+                'projects:project_delete',
+                kwargs={'pk': id_of_project}
+            ),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 302)
 
     def test_user_not_owner_on_project(self):
         self.client.logout()
@@ -744,6 +791,29 @@ class ProjectDeleteViewTests(TestCase):
             status_code=302
         )
 
+    def test_delete_as_user_not_owner_on_project_in_vote(self):
+        project_to_delete = ProjectFactory(creator=self.user)
+        id_of_project = project_to_delete.id
+
+        vote = VoteFactory()
+        vote.projects.add(project_to_delete)
+
+        self.client.logout()
+        self.client.login(
+            username=self.user_2.username,
+            password="passUser"
+        )
+
+        result = self.client.post(
+            reverse(
+                'projects:project_delete',
+                kwargs={'pk': id_of_project}
+            ),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 302)
+
     def test_access_as_logout(self):
         self.client.logout()
 
@@ -771,4 +841,23 @@ class ProjectDeleteViewTests(TestCase):
         )
 
         self.assertEqual(1, Project.objects.filter(id=id_of_project).count())
+        self.assertEqual(result.status_code, 302)
+
+    def test_delete_as_logout_project_in_vote(self):
+        project_to_delete = ProjectFactory(creator=self.user)
+        id_of_project = project_to_delete.id
+
+        vote = VoteFactory()
+        vote.projects.add(project_to_delete)
+
+        self.client.logout()
+
+        result = self.client.post(
+            reverse(
+                'projects:project_delete',
+                kwargs={'pk': id_of_project}
+            ),
+            follow=False
+        )
+
         self.assertEqual(result.status_code, 302)
