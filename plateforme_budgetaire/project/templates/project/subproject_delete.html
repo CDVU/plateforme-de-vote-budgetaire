@@ -6,14 +6,18 @@
 
 {% block content %}
     <div class="row">
-        <p>
-            <strong>Êtes-vous sûr de vouloir supprimer le sous-projet "{{subProject.name}}" du projet "{{subProject.project}}" ? </strong>
-        </p>
-
-        <form method="post" action="">
-            {% csrf_token %}
-            <button class="btn btn-danger" type="submit" >Oui</button>
-            <a class="btn btn-warning" href='{% url "projects:project_detail" subProject.project.id %}'>Non</a>
-        </form>
+        <div class="panel panel-danger">
+            <div class="panel-heading">
+                <h4>{{subProject.name}} - {{subProject.project}}</h4>
+            </div>
+            <div class="panel-body">
+                <strong>Êtes-vous sûr de vouloir supprimer le sous-projet "{{subProject.name}}" du projet "{{subProject.project}}" ? </strong>
+                <form method="post" action="" class="text-right">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit" >Oui</button>
+                    <a class="btn btn-warning" href='{% url "projects:project_detail" subProject.project.id %}'>Non</a>
+                </form>
+            </div>
+        </div>
     </div>
 {% endblock %}
