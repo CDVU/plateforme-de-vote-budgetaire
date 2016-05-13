@@ -1,42 +1,48 @@
 # coding: utf-8
 
-from django.shortcuts import render
 from django.contrib.auth.models import User
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import *
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse_lazy
 from pages.forms import RegisterForm
 from pages.models import Hash
 from django.contrib.auth import logout
 from django.conf import settings
-from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 import random
 import datetime
 from django.utils import timezone
 from django.contrib import messages
 
 
-def home(request):
-    return render(request, 'registration/login.html')
+class Home(TemplateView):
+    template_name = 'registration/login.html'
 
 
-def contact(request):
-    return render(request, 'pages/contact.html')
+class Contact(TemplateView):
+    template_name = 'pages/contact.html'
 
 
-def mission(request):
-    return render(request, 'pages/mission.html')
+class Mission(TemplateView):
+    template_name = 'pages/mission.html'
 
 
-def logout_view(request):
-    logout(request)
-    messages.add_message(
-        request,
-        messages.WARNING,
-        'Vous avez été déconnecté!'
-    )
-    # Redirect to a success page.
-    return HttpResponseRedirect("/")
+class LogoutView(RedirectView):
+
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        messages.add_message(
+            request,
+            messages.WARNING,
+            'Vous avez été déconnecté!'
+        )
+
+        return redirect(self.get_redirect_url(*args, **kwargs))
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse_lazy(
+            "pages:home"
+        )
 
 
 class Register(CreateView):
