@@ -81,7 +81,7 @@ class Register(CreateView):
         self.send_courriel(self.object, generate_hash)
 
         messages.add_message(
-            request,
+            self.request,
             messages.INFO,
             "Un courriel vient de vous être envoyé afin de valider votre "
             "inscription!"
