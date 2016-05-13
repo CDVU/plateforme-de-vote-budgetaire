@@ -1,0 +1,18 @@
+{% extends "landing_base.html" %}
+{% load staticfiles %}
+{% load bootstrap3 %}
+
+{% block title %}CDVU | Formulaire sous-projet{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h2>Modifier le sous-projet : {{subProject.name}}</h2>
+    </div>
+    <form enctype="multipart/form-data" method="post">{% csrf_token%}
+        {% bootstrap_form form %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <button type="reset" class="btn btn-danger">Réinitialiser</button>
+        {% endbuttons %}
+    </form>
+{% endblock %}
