@@ -91,6 +91,12 @@ class ProjectList(generic.ListView):
         context = super(ProjectList, self).get_context_data(**kwargs)
         context['validation_state_selected'] = self.status
         context['status_list'] = PROJECT_STATUS_CHOICES
+        if self.request.user.is_staff:
+            context['number_total_of_project'] = Project.objects.all().count()
+        else:
+            context['number_total_of_project'] = Project.objects.filter(
+                creator=self.request.user
+            ).count()
         return context
 
 

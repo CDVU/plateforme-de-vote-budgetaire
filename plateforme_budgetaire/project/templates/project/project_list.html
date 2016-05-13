@@ -5,11 +5,11 @@
 {% block content %}
     <div class="row">
         <div class="col-sm-8">
-            <h1>Liste des projets <a class="btn btn-success" href='{% url "projects:project_create" %}'>Soumettre un projet</a></h1>
+            <h2>Liste des projets <a class="btn btn-success" href='{% url "projects:project_create" %}'>Soumettre un projet</a></h2>
         </div>
         <div class="col-sm-4 text-right">
             <p>
-                <strong>Filtrer les projets par status de validation:</strong>
+                <strong>Filtrer les projets par statuts de validation :</strong>
                 <select class="form-control" onchange="window.location = this.options[this.selectedIndex].value">
                     {% for status, key in status_list %}
                         {% if validation_state_selected == key %}
@@ -28,41 +28,53 @@
             </p>
         </div>
     </div>
-    <div class="row panel panel-default">
-        <table class="table table-hover table-condensed sortable">
-        {% for project in projects %}
-            {% for status, key in status_list %}
-            {% if project.status == status %}
-            {% if key == 1 %}
-            <tr class="row-link success">
-            {% elif key == 2 %}
-            <tr class="row-link danger">
-            {% else %}
-            <tr class="row-link">
-            {% endif %}
-            {% endif %}
+    <div class="row">
+        {% if number_total_of_project %}
+            {% if projects %}
+            <table class="panel panel-default table table-hover table-condensed sortable">
+            {% for project in projects %}
+                {% for status, key in status_list %}
+                {% if project.status == status %}
+                {% if key == 1 %}
+                <tr class="row-link success">
+                {% elif key == 2 %}
+                <tr class="row-link danger">
+                {% else %}
+                <tr class="row-link">
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+                    <td>
+                        <a href='{% url "projects:project_detail" project.id %}'>
+                            <h4>
+                                {{project.name}}
+                                {% for status, key in status_list %}
+                                {% if project.status == status %}
+                                {% if key == 1 %}
+                                <span class="label label-success pull-right">{{project.status}}</span>
+                                {% elif key == 2 %}
+                                <span class="label label-danger pull-right">{{project.status}}</span>
+                                {% else %}
+                                <span class="label label-default pull-right">{{project.status}}</span>
+                                {% endif %}
+                                {% endif %}
+                                {% endfor %}
+                            </h4>
+                            <p>{{project.description}}</p>
+                        </a>
+                    </td>
+                </tr>
             {% endfor %}
-                <td>
-                    <a href='{% url "projects:project_detail" project.id %}'>
-                        <h4>
-                            {{project.name}}
-                            {% for status, key in status_list %}
-                            {% if project.status == status %}
-                            {% if key == 1 %}
-                            <span class="label label-success pull-right">{{project.status}}</span>
-                            {% elif key == 2 %}
-                            <span class="label label-danger pull-right">{{project.status}}</span>
-                            {% else %}
-                            <span class="label label-default pull-right">{{project.status}}</span>
-                            {% endif %}
-                            {% endif %}
-                            {% endfor %}
-                        </h4>
-                        <p>{{project.description}}</p>
-                    </a>
-                </td>
-            </tr>
-        {% endfor %}
-        </table>
+            </table>
+            {% else %}
+                <div class="alert alert-warning">
+                    Aucun de vos projets ne correspond à ce statut.
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-warning">
+                Vous n'avez aucun projet pour le moment, vous pouvez en créer un sur la <a href='{% url "projects:project_create" %}'>page de création de projets</a>.
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
