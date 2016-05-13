@@ -32,13 +32,21 @@
                 <button type="submit" class="btn btn-default">Connexion</button> ou <a href="{% url 'pages:register'%}">s'inscrire</a>
             </form>
             {% else %}
-            <div class="alert alert-info text-justify">
-                <h2>Le saviez-vous?</h2>
+            <div class="page-header">
+                <h2>Le saviez-vous ?</h2>
+            </div>
+            <div class="text-justify">
                 <p>
-                    Cette plateforme est développé sous licence <em>GNU General Public License</em> qui est une licence libre, vous avez donc la possibilité de voir notre code source er de vous assurer de l'anonymat que nous vous offrons lorsque vous voter sur notre plateforme.
+                    Cette plateforme est développée sous licence <em>GNU General Public License</em>. Vous avez donc la possibilité de vous assurer de l’anonymat que nous vous offrons lorsque vous votez sur notre plateforme.
                 </p>
                 <p>
                     Cette licence vous donne aussi la possibilité de contribuer librement à l'amélioration de cet outil afin de nous aider à répondre aux mieux à vos attentes.
+                </p>
+                <p>
+                    Vous pouvez retrouver toutes les informations concernant le projet sur
+                    <a href="https://github.com/CDVU/plateforme-de-vote-budgetaire">
+                        sa page github.
+                    </a>
                 </p>
             </div>
             {% endif %}
