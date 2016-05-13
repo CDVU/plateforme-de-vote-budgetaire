@@ -77,27 +77,33 @@
         <div class="col-sm-12">
             <a class="btn btn-success pull-right" href='{% url "projects:subproject_create" project.id %}' role="button" >Ajouter sous-projet</a>
             <h2>Sous-projets : </h2>
-            {% for subProject in project.SubProject.all %}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        {{ subProject.name }}
-                        <span class="pull-right">
-                            <a class="btn-xs btn-warning" href='{% url "projects:subproject_update" subProject.id %}' role="button" ><i class="fa fa-pencil"></i></a>
-                            <a class="btn-xs btn-danger" href='{% url "projects:subproject_delete" subProject.id %}' role="button" ><i class="fa fa-trash"></i></a>
-                        </span>
-                    </h4>
+            {% if project.SubProject.all.count %}
+                {% for subProject in project.SubProject.all %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            {{ subProject.name }}
+                            <span class="pull-right">
+                                <a class="btn-xs btn-warning" href='{% url "projects:subproject_update" subProject.id %}' role="button" ><i class="fa fa-pencil"></i></a>
+                                <a class="btn-xs btn-danger" href='{% url "projects:subproject_delete" subProject.id %}' role="button" ><i class="fa fa-trash"></i></a>
+                            </span>
+                        </h4>
+                    </div>
+                    <div class="panel-body">
+                        <strong>Temps nécessaire :</strong> {{ subProject.completion_time }}<br>
+                        <strong>Montant :</strong> {{ subProject.minimum_amount }} - {{ subProject.maximum_amount }}<br>
+                        <br>
+                        <p>
+                            {{ subProject.description }}
+                        </p>
+                    </div>
                 </div>
-                <div class="panel-body">
-                    <strong>Temps nécessaire :</strong> {{ subProject.completion_time }}<br>
-                    <strong>Montant :</strong> {{ subProject.minimum_amount }} - {{ subProject.maximum_amount }}<br>
-                    <br>
-                    <p>
-                        {{ subProject.description }}
-                    </p>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-danger">
+                    Vous n'avez aucun sous-projet pour le moment, vous pouvez en créer un sur la <a href='{% url "projects:subproject_create" project.id%}'>page de création de sous-projets</a>.
                 </div>
-            </div>
-            {% endfor %}
+            {% endif %}
         </div>
     </div>
 
