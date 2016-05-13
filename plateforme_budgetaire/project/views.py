@@ -147,7 +147,7 @@ class SubProjectCreate(generic.CreateView):
 class ProjectUpdate(generic.UpdateView):
     model = Project
     form_class = ProjectsForm
-    template_name = "project/project_form.html"
+    template_name = "project/project_update.html"
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
