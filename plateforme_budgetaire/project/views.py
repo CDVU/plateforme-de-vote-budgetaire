@@ -189,7 +189,19 @@ class SubProjectDelete(generic.DeleteView):
         is_staff = self.request.user.is_staff
 
         if is_staff or is_creator:
-            return super(SubProjectDelete, self).dispatch(*args, **kwargs)
+            if subproject.project.Votes.all().count():
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    'Ce projet est déjà soumis au vote, vous ne pouvez'
+                    ' plus le modifier!'
+                )
+                return redirect(reverse_lazy(
+                    "projects:project_detail",
+                    args=[subproject.project.id]
+                ))
+            else:
+                return super(SubProjectDelete, self).dispatch(*args, **kwargs)
         else:
             messages.add_message(
                 self.request,
