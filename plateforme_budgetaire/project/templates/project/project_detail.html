@@ -80,9 +80,12 @@
             {% for subProject in project.SubProject.all %}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <a class="btn-xs btn-danger pull-right" href='{% url "projects:subproject_delete" subProject.id %}' role="button" >X</a>
                     <h4 class="panel-title">
                         {{ subProject.name }}
+                        <span class="pull-right">
+                            <a class="btn-xs btn-warning" href='{% url "projects:subproject_update" subProject.id %}' role="button" ><i class="fa fa-pencil"></i></a>
+                            <a class="btn-xs btn-danger" href='{% url "projects:subproject_delete" subProject.id %}' role="button" ><i class="fa fa-trash"></i></a>
+                        </span>
                     </h4>
                 </div>
                 <div class="panel-body">

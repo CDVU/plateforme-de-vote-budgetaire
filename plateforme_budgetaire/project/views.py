@@ -272,6 +272,44 @@ class ProjectDelete(generic.DeleteView):
         )
 
 
+class SubProjectUpdate(generic.UpdateView):
+    model = SubProject
+    form_class = SubProjectsForm
+    template_name = "project/subproject_update.html"
+    pk_url_kwarg = 'pk'
+    context_object_name = 'subProject'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        subproject = get_object_or_404(
+            SubProject,
+            id=kwargs['pk']
+        )
+        is_creator = request.user == subproject.project.creator
+        is_staff = request.user.is_staff
+        if is_staff or is_creator:
+            return super(SubProjectUpdate, self).\
+                dispatch(request, *args, **kwargs)
+
+        else:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Vous ne disposer des droits nécessaire'
+                ' afin de modifier ce sous-projet!'
+            )
+            return redirect(reverse_lazy(
+                'projects:project_detail',
+                kwargs={'pk': subproject.project.id}
+            ))
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'projects:project_detail',
+            kwargs={'pk': self.object.project.id}
+        )
+
+
 class AcceptProject(generic.RedirectView):
 
     @method_decorator(login_required)
