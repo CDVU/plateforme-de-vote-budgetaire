@@ -15,7 +15,7 @@
 >**WARNING** Si vous êtes sous Windows, supprimer mysql-python du fichier requirements.txt et installer le manuellement depuis [cette page](https://pypi.python.org/pypi/MySQL-python/1.2.5)
 
 ```
-cd chemin/vers/TableauDeBord/
+cd ../plateforme-de-vote-budgetaire/
 pip install -r requirements.txt
 ```
 
@@ -25,7 +25,7 @@ Cet exemple ce base sur l'utilisation d'une table MySQL.
 
  1 - Créer une nouvelle table dans votre base de données.
 
- 2 - Entrez vos paramètres de connexion dans `../plateforme_budgetaire/plateforme_budgetaire/settings.py`
+ 2 - Entrez vos paramètres de connexion dans `../plateforme-de-vote-budgetaire/plateforme_budgetaire/plateforme_budgetaire/settings.py`
 
 ```
 DATABASES = {
@@ -41,7 +41,7 @@ DATABASES = {
  3 - Mettez à jour votre base de données
 
  ```
- cd ../chemin/vers/plateforme_budgetaire/
+ cd ../plateforme-de-vote-budgetaire/plateforme_budgetaire/
  python manage.py migrate
  ```
 
@@ -49,7 +49,7 @@ DATABASES = {
 
  1 - Lancer votre serveur
  ```
- cd ../chemin/vers/TableauDeBord/
+ cd ../plateforme-de-vote-budgetaire/plateforme_budgetaire/
  python manage.py runserver
  ```
 
