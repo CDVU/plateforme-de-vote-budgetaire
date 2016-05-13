@@ -51,10 +51,29 @@ class Register(CreateView):
     form_class = RegisterForm
     password = None
 
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            if User.objects.filter(username=form.instance.email).count():
+                return self.form_invalid(form)
+            else:
+                return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
     def form_valid(self, form):
         form.instance.username = form.instance.email
         self.password = form.instance.password
         return super(Register, self).form_valid(form)
+
+    def form_invalid(self, form):
+        messages.add_message(
+            self.request,
+            messages.ERROR,
+            'Cet email est déjà enregistré, vous ne pouvez pas '
+            'vous inscrire plusieurs fois!'
+        )
+        return self.render_to_response({'form': form})
 
     def get_success_url(self):
         self.object.set_password(self.password)

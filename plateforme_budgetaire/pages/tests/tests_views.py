@@ -248,7 +248,7 @@ class RegisterViewTests(TestCase):
             'django.core.mail.backends.locmem.EmailBackend'
 
         self.user = User.objects.create_user(
-            username='am56680@ens.etsmtl.ca',
+            username='noel.rignon.1@ens.etsmtl.ca',
             email='am56680@ens.etsmtl.ca',
             password='passUser'
         )
@@ -272,7 +272,7 @@ class RegisterViewTests(TestCase):
         self.client.logout()
 
         data = {
-            'email': 'rignon.noel.1@ens.etsmtl.ca',
+            'email': 'rignon.noel.2@ens.etsmtl.ca',
             'password': 'ToTo1234#',
         }
 
@@ -331,6 +331,22 @@ class RegisterViewTests(TestCase):
 
         data = {
             'email': 'noel.rignon.1@etsmtl.ca',
+            'password': 'ToTo1234#',
+        }
+
+        result = self.client.post(
+            reverse('pages:register'),
+            data,
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 200)
+
+    def test_email_already_used(self):
+        self.client.logout()
+
+        data = {
+            'email': 'noel.rignon.1@ens.etsmtl.ca',
             'password': 'ToTo1234#',
         }
 
