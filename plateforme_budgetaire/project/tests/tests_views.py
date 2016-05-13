@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.urlresolvers import reverse
 import datetime
-from project.models import Project, PROJECT_STATUS_CHOICES
+from project.models import Project, PROJECT_STATUS_CHOICES, SubProject
 
 
 class ProjectListViewTests(TestCase):
@@ -856,6 +856,329 @@ class ProjectDeleteViewTests(TestCase):
             reverse(
                 'projects:project_delete',
                 kwargs={'pk': id_of_project}
+            ),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 302)
+
+
+class SubProjectDeleteViewTests(TestCase):
+
+    def setUp(self):
+        settings.EMAIL_BACKEND = \
+            'django.core.mail.backends.locmem.EmailBackend'
+
+        self.user = User.objects.create_user(
+            username='am56680@ens.etsmtl.ca',
+            email='am56680@ens.etsmtl.ca',
+            password='passUser'
+        )
+        self.user_2 = User.objects.create_user(
+            username='ak12345@ens.etsmtl.ca',
+            email='ak12345@ens.etsmtl.ca',
+            password='passUser'
+        )
+        self.admin = User.objects.create_superuser(
+            username='admin',
+            email='rignon.noel@openmailbox.org',
+            password='passAdmin'
+        )
+
+        self.project = ProjectFactory(creator=self.user)
+        self.sub_project_1 = SubProjectFactory(project=self.project)
+        self.sub_project_2 = SubProjectFactory(project=self.project)
+
+        self.project_2 = ProjectFactory(creator=self.user_2)
+        self.sub_project_3 = SubProjectFactory(project=self.project_2)
+        self.sub_project_4 = SubProjectFactory(project=self.project_2)
+
+    def test_access_as_user(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:subproject_delete',
+                kwargs={'subProjectID': self.sub_project_1.id}
+            ),
+            follow=False
+        )
+        self.assertEqual(result.status_code, 200)
+
+    def test_delete_as_user(self):
+        id_of_subproject = self.sub_project_1.id
+        id_of_project = self.sub_project_1.project.id
+
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        result = self.client.post(
+            reverse(
+                'projects:subproject_delete',
+                kwargs={'subProjectID': id_of_subproject}
+            ),
+            follow=True
+        )
+
+        self.assertEqual(
+            0,
+            SubProject.objects.filter(id=id_of_subproject).count()
+        )
+        self.assertRedirects(
+            result,
+            reverse(
+                'projects:project_detail',
+                kwargs={'pk': id_of_project}
+            ),
+            status_code=302
+        )
+
+    def test_delete_as_user_project_in_vote(self):
+        id_of_subproject = self.sub_project_1.id
+        id_of_project = self.sub_project_1.project.id
+
+        vote = VoteFactory()
+        vote.projects.add(self.sub_project_1.project)
+
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        result = self.client.post(
+            reverse(
+                'projects:subproject_delete',
+                kwargs={'subProjectID': id_of_subproject}
+            ),
+            follow=True
+        )
+
+        self.assertEqual(
+            1,
+            SubProject.objects.filter(id=id_of_subproject).count()
+        )
+        self.assertRedirects(
+            result,
+            reverse(
+                'projects:project_detail',
+                kwargs={'pk': id_of_project}
+            ),
+            status_code=302
+        )
+
+    def test_access_as_admin(self):
+        self.client.logout()
+        self.client.login(
+            username=self.admin.username,
+            password="passAdmin"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:subproject_delete',
+                kwargs={'subProjectID': self.sub_project_1.id}
+            ),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 200)
+
+    def test_delete_as_admin(self):
+        id_of_subproject = self.sub_project_1.id
+        id_of_project = self.sub_project_1.project.id
+
+        self.client.logout()
+        self.client.login(
+            username=self.admin.username,
+            password="passAdmin"
+        )
+
+        result = self.client.post(
+            reverse(
+                'projects:subproject_delete',
+                kwargs={'subProjectID': self.sub_project_1.id}
+            ),
+            follow=True
+        )
+
+        self.assertEqual(
+            0,
+            SubProject.objects.filter(id=id_of_subproject).count()
+        )
+        self.assertRedirects(
+            result,
+            reverse(
+                'projects:project_detail',
+                kwargs={'pk': id_of_project}
+            ),
+            status_code=302
+        )
+
+    def test_delete_as_admin_project_in_vote(self):
+        id_of_subproject = self.sub_project_1.id
+        id_of_project = self.sub_project_1.project.id
+
+        vote = VoteFactory()
+        vote.projects.add(self.sub_project_1.project)
+
+        self.client.logout()
+        self.client.login(
+            username=self.admin.username,
+            password="passAdmin"
+        )
+
+        result = self.client.post(
+            reverse(
+                'projects:subproject_delete',
+                kwargs={'subProjectID': id_of_subproject}
+            ),
+            follow=True
+        )
+
+        self.assertEqual(
+            1,
+            SubProject.objects.filter(id=id_of_subproject).count()
+        )
+        self.assertRedirects(
+            result,
+            reverse(
+                'projects:project_detail',
+                kwargs={'pk': id_of_project}
+            ),
+            status_code=302
+        )
+
+    def test_user_not_owner_on_project(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:subproject_delete',
+                kwargs={'subProjectID': self.sub_project_3.id}
+            ),
+            follow=True
+        )
+
+        self.assertRedirects(
+            result,
+            reverse(
+                'projects:project_list',
+            ),
+            status_code=302
+        )
+
+    def test_delete_as_user_not_owner_on_project(self):
+        id_of_subproject = self.sub_project_1.id
+
+        self.client.logout()
+        self.client.login(
+            username=self.user_2.username,
+            password="passUser"
+        )
+
+        result = self.client.post(
+            reverse(
+                'projects:subproject_delete',
+                kwargs={'subProjectID': id_of_subproject}
+            ),
+            follow=True
+        )
+
+        self.assertEqual(
+            1,
+            SubProject.objects.filter(id=id_of_subproject).count()
+        )
+        self.assertRedirects(
+            result,
+            reverse('projects:project_list'),
+            status_code=302
+        )
+
+    def test_delete_as_user_not_owner_on_project_in_vote(self):
+        id_of_subproject = self.sub_project_1.id
+
+        vote = VoteFactory()
+        vote.projects.add(self.sub_project_1.project)
+
+        self.client.logout()
+        self.client.login(
+            username=self.user_2.username,
+            password="passUser"
+        )
+
+        result = self.client.post(
+            reverse(
+                'projects:subproject_delete',
+                kwargs={'subProjectID': id_of_subproject}
+            ),
+            follow=True
+        )
+
+        self.assertEqual(
+            1,
+            SubProject.objects.filter(id=id_of_subproject).count()
+        )
+        self.assertRedirects(
+            result,
+            reverse('projects:project_list'),
+            status_code=302
+        )
+
+    def test_access_as_logout(self):
+        self.client.logout()
+
+        result = self.client.get(
+            reverse(
+                'projects:subproject_delete',
+                kwargs={'subProjectID': self.sub_project_1.id}
+            ),
+            follow=False
+        )
+        self.assertEqual(result.status_code, 302)
+
+    def test_delete_as_logout(self):
+        id_of_subproject = self.sub_project_1.id
+
+        self.client.logout()
+
+        result = self.client.post(
+            reverse(
+                'projects:subproject_delete',
+                kwargs={'subProjectID': id_of_subproject}
+            ),
+            follow=False
+        )
+
+        self.assertEqual(
+            1,
+            SubProject.objects.filter(id=id_of_subproject).count()
+        )
+        self.assertEqual(result.status_code, 302)
+
+    def test_delete_as_logout_project_in_vote(self):
+        id_of_subproject = self.sub_project_1.id
+
+        vote = VoteFactory()
+        vote.projects.add(self.sub_project_1.project)
+
+        self.client.logout()
+
+        result = self.client.post(
+            reverse(
+                'projects:subproject_delete',
+                kwargs={'subProjectID': id_of_subproject}
             ),
             follow=False
         )
