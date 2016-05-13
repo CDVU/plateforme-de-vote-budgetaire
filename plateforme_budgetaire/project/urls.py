@@ -47,13 +47,13 @@ urlpatterns = patterns(
 
     # Function
     url(
-        r'^accept/(\d+)$',
-        accept_project,
+        r'^accept/(?P<pk>\d+)$',
+        AcceptProject.as_view(),
         name="project_accept"
     ),
     url(
-        r'^refuse/(\d+)$',
-        refuse_project,
+        r'^refuse/(?P<pk>\d+)$',
+        RefuseProject.as_view(),
         name="project_refuse"
     ),
 )
