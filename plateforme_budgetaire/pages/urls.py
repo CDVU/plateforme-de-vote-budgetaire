@@ -10,12 +10,12 @@ urlpatterns = patterns(
     ),
     url(
         r'^contact$',
-        views.contact,
+        views.Contact.as_view(),
         name='contact'
     ),
     url(
         r'^mission',
-        views.mission,
+        views.Mission.as_view(),
         name='mission'
     ),
     url(
@@ -30,7 +30,7 @@ urlpatterns = patterns(
     ),
     url(
         r'^logout$',
-        views.logout_view,
+        views.LogoutView.as_view(),
         name='logout'
     ),
 )
