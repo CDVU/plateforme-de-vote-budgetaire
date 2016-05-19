@@ -274,6 +274,7 @@ class RegisterViewTests(TestCase):
         data = {
             'email': 'rignon.noel.2@ens.etsmtl.ca',
             'password': 'ToTo1234#',
+            'password_verify': 'ToTo1234#'
         }
 
         result = self.client.post(
@@ -300,6 +301,7 @@ class RegisterViewTests(TestCase):
         data = {
             'email': 'am56680@ens.etsmtl.ca',
             'password': 'ToTo1234#',
+            'password_verify': 'ToTo1234#',
         }
 
         result = self.client.post(
@@ -316,6 +318,7 @@ class RegisterViewTests(TestCase):
         data = {
             'email': 'noel.rignon@ens.etsmtl.ca',
             'password': 'ToTo1234#',
+            'password_verify': 'ToTo1234#',
         }
 
         result = self.client.post(
@@ -332,6 +335,7 @@ class RegisterViewTests(TestCase):
         data = {
             'email': 'noel.rignon.1@etsmtl.ca',
             'password': 'ToTo1234#',
+            'password_verify': 'ToTo1234#',
         }
 
         result = self.client.post(
@@ -348,6 +352,7 @@ class RegisterViewTests(TestCase):
         data = {
             'email': 'noel.rignon.1@ens.etsmtl.ca',
             'password': 'ToTo1234#',
+            'password_verify': 'ToTo1234#',
         }
 
         result = self.client.post(
@@ -357,6 +362,50 @@ class RegisterViewTests(TestCase):
         )
 
         self.assertEqual(result.status_code, 200)
+
+    def test_bad_password_confirm(self):
+        self.client.logout()
+
+        data = {
+            'email': 'noel.rignon.2@ens.etsmtl.ca',
+            'password': 'ToTo1234#',
+            'password_verify': 'Toto1234#',
+        }
+
+        result = self.client.post(
+            reverse('pages:register'),
+            data,
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 200)
+
+        self.assertContains(
+            result,
+            "Les mots de passe ne sont pas identiques !"
+        )
+
+    def test_empty_password_confirm(self):
+        self.client.logout()
+
+        data = {
+            'email': 'noel.rignon.2@ens.etsmtl.ca',
+            'password': 'ToTo1234#',
+            'password_verify': '',
+        }
+
+        result = self.client.post(
+            reverse('pages:register'),
+            data,
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 200)
+
+        self.assertContains(
+            result,
+            "Les mots de passe ne sont pas identiques !"
+        )
 
 
 class RegisterValidationViewTests(TestCase):
