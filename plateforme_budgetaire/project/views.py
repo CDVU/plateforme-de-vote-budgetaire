@@ -127,8 +127,37 @@ class SubProjectCreate(generic.CreateView):
     template_name = 'project/subproject_form.html'
 
     @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(SubProjectCreate, self).dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        project = get_object_or_404(
+            Project,
+            id=kwargs['projectID']
+        )
+
+        is_creator = request.user == project.creator
+        is_staff = request.user.is_staff
+        is_editable = project.status != PROJECT_STATUS_CHOICES[1][0]
+
+        if is_creator or is_staff:
+            if is_editable:
+                return super(SubProjectCreate, self).dispatch(request, *args, **kwargs)
+            else:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Ce projet n’est plus éditable, il a été validé !"
+                )
+        else:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Vous ne disposer des droits nécessaire'
+                ' afin de créer ce sous-projet!'
+            )
+
+        return redirect(reverse_lazy(
+            "projects:project_detail",
+            args=[project.id]
+        ))
 
     def form_valid(self, form):
         form.instance.project = Project.objects.\
@@ -224,7 +253,7 @@ class SubProjectDelete(generic.DeleteView):
                         ' plus le modifier!'
                     )
                 else:
-                    return super(SubProjectDelete, self).dispatch(*args, **kwargs)
+                    return super(SubProjectDelete, self).dispatch(request, *args, **kwargs)
             else:
                 messages.add_message(
                     request,
