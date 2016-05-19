@@ -139,7 +139,8 @@ class SubProjectCreate(generic.CreateView):
 
         if is_creator or is_staff:
             if is_editable:
-                return super(SubProjectCreate, self).dispatch(request, *args, **kwargs)
+                return super(SubProjectCreate, self).\
+                    dispatch(request, *args, **kwargs)
             else:
                 messages.add_message(
                     request,
@@ -193,7 +194,8 @@ class ProjectUpdate(generic.UpdateView):
 
         if is_staff or is_creator:
             if is_editable:
-                return super(ProjectUpdate, self).dispatch(request, *args, **kwargs)
+                return super(ProjectUpdate, self).\
+                    dispatch(request, *args, **kwargs)
             else:
                 messages.add_message(
                     request,
@@ -253,7 +255,8 @@ class SubProjectDelete(generic.DeleteView):
                         ' plus le modifier!'
                     )
                 else:
-                    return super(SubProjectDelete, self).dispatch(request, *args, **kwargs)
+                    return super(SubProjectDelete, self).\
+                        dispatch(request, *args, **kwargs)
             else:
                 messages.add_message(
                     request,
