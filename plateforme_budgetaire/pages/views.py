@@ -114,7 +114,7 @@ class Register(CreateView):
         message += u"Pour activer votre compte, veuillez cliquer sur le " \
                    u"lien ci dessous ou copier/coller le lien dans votre " \
                    u"navigateur internet :\n"
-        message += u"localhost:8000/register/" + hash
+        message += app['site']['dns'] + u"register/" + hash
         message += u"\n\n"
         message += u"Pour toute question ou demande d'aide, n'hésitais " \
                    u"pas à nous contacter à l'adresse suivante : "
