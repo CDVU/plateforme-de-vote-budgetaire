@@ -234,6 +234,14 @@ class SubProjectDelete(generic.DeleteView):
                 "projects:project_list"
             ))
 
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.project.status = PROJECT_STATUS_CHOICES[0][0]
+        self.object.project.save()
+        self.object.delete()
+        return HttpResponseRedirect(success_url)
+
     def get_success_url(self):
         messages.add_message(
             self.request,
