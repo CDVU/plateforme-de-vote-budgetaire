@@ -133,6 +133,9 @@ class SubProjectCreate(generic.CreateView):
     def form_valid(self, form):
         form.instance.project = Project.objects.\
             get(id=self.kwargs['projectID'])
+
+        form.instance.project.status = PROJECT_STATUS_CHOICES[0][0]
+        form.instance.project.save()
         return super(SubProjectCreate, self).form_valid(form)
 
     def get_success_url(self):
