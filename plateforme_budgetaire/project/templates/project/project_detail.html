@@ -10,6 +10,7 @@
             </h1>
         </div>
         <div class="col-sm-4">
+            {% if user.is_staff or status_id != 1 %}
             <div class="dropdown pull-right">
                 <button class="btn btn-primary" type="button" id="dropdownMenuProject" data-toggle="dropdown">
                     Administrer le projet
@@ -32,6 +33,7 @@
                         </li>
                         {% endif %}
                     {% endif %}
+                    {% if status_id != 1 %}
                     <li>
                         <a href='{% url "projects:project_update" project.id %}'>
                             <i class="fa fa-edit"></i> Modifier
@@ -42,8 +44,10 @@
                             <i class="fa fa-trash"> Supprimer</i>
                         </a>
                     </li>
+                    {% endif %}
                 </ul>
             </div>
+            {% endif %}
         </div>
     </div>
     <hr>
@@ -75,7 +79,9 @@
 
     <div class="row" id="sub-project">
         <div class="col-sm-12">
-            <a class="btn btn-success pull-right" href='{% url "projects:subproject_create" project.id %}' role="button" >Ajouter sous-projet</a>
+            {% if status_id != 1 %}
+                <a class="btn btn-success pull-right" href='{% url "projects:subproject_create" project.id %}' role="button" >Ajouter sous-projet</a>
+            {% endif %}
             <h2>Sous-projets : </h2>
             {% if project.SubProject.all.count %}
                 {% for subProject in project.SubProject.all %}
@@ -83,10 +89,12 @@
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             {{ subProject.name }}
+                            {% if status_id != 1 %}
                             <span class="pull-right">
                                 <a class="btn-xs btn-warning" href='{% url "projects:subproject_update" subProject.id %}' role="button" ><i class="fa fa-pencil"></i></a>
                                 <a class="btn-xs btn-danger" href='{% url "projects:subproject_delete" subProject.id %}' role="button" ><i class="fa fa-trash"></i></a>
                             </span>
+                            {% endif %}
                         </h4>
                     </div>
                     <div class="panel-body">
