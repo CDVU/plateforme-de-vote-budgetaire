@@ -18,7 +18,7 @@ class RegisterForm(forms.ModelForm):
         fields = ['email', 'password']
 
     email = forms.CharField(
-        label=_('Email'),
+        label=_('Courriel'),
         required=True,
         max_length=100,
         validators=[my_validator]
@@ -29,12 +29,38 @@ class RegisterForm(forms.ModelForm):
     })
 
     password = forms.CharField(
-        label=_('Password'),
+        label=_('Mot de passe'),
         required=True,
-        max_length=100
+        max_length=100,
+        widget=forms.PasswordInput
     )
     password.widget.attrs.update({
         'placeholder': _(u'********'),
         'class': 'form-control',
-        'type': 'hidden'
     })
+
+    password_verify = forms.CharField(
+        label=_(u'Vérification'),
+        required=False,
+        max_length=100,
+        widget=forms.PasswordInput
+    )
+    password_verify.widget.attrs.update({
+        'placeholder': _(u'********'),
+        'class': 'form-control',
+    })
+
+    def clean(self):
+        password1 = self.cleaned_data.get('password')
+        password2 = self.cleaned_data.get('password_verify')
+        email = self.cleaned_data.get('email')
+
+        if User.objects.filter(username=email).count():
+            raise forms.ValidationError("Ce courriel est déjà utilisé !")
+
+        if password1 and password1 != password2:
+            raise forms.ValidationError(
+                "Les mots de passe ne sont pas identiques !"
+            )
+
+        return self.cleaned_data
