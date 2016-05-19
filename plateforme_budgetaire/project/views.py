@@ -204,28 +204,33 @@ class SubProjectDelete(generic.DeleteView):
     pk_url_kwarg = 'subProjectID'
 
     @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         subproject = get_object_or_404(
             SubProject,
-            id=self.kwargs['subProjectID']
+            id=kwargs['subProjectID']
         )
-        is_creator = self.request.user == subproject.project.creator
-        is_staff = self.request.user.is_staff
+        is_creator = request.user == subproject.project.creator
+        is_staff = request.user.is_staff
+        is_editable = \
+            subproject.project.status != PROJECT_STATUS_CHOICES[1][0]
 
         if is_staff or is_creator:
-            if subproject.project.Votes.all().count():
-                messages.add_message(
-                    self.request,
-                    messages.ERROR,
-                    'Ce projet est déjà soumis au vote, vous ne pouvez'
-                    ' plus le modifier!'
-                )
-                return redirect(reverse_lazy(
-                    "projects:project_detail",
-                    args=[subproject.project.id]
-                ))
+            if is_editable:
+                if subproject.project.Votes.all().count():
+                    messages.add_message(
+                        request,
+                        messages.ERROR,
+                        'Ce projet est déjà soumis au vote, vous ne pouvez'
+                        ' plus le modifier!'
+                    )
+                else:
+                    return super(SubProjectDelete, self).dispatch(*args, **kwargs)
             else:
-                return super(SubProjectDelete, self).dispatch(*args, **kwargs)
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Ce projet n’est plus éditable, il a été validé !"
+                )
         else:
             messages.add_message(
                 self.request,
@@ -233,9 +238,11 @@ class SubProjectDelete(generic.DeleteView):
                 'Vous ne disposer des droits nécessaire'
                 ' afin de supprimer ce sous-projet!'
             )
-            return redirect(reverse_lazy(
-                "projects:project_list"
-            ))
+
+        return redirect(reverse_lazy(
+            "projects:project_detail",
+            args=[subproject.project.id]
+        ))
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
