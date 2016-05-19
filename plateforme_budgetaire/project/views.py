@@ -161,7 +161,7 @@ class ProjectUpdate(generic.UpdateView):
 
         if is_staff or is_creator:
             if is_editable:
-                return super(ProjectUpdate, self).dispatch(request*args, **kwargs)
+                return super(ProjectUpdate, self).dispatch(request, *args, **kwargs)
             else:
                 messages.add_message(
                     request,
@@ -301,12 +301,21 @@ class SubProjectUpdate(generic.UpdateView):
             SubProject,
             id=kwargs['pk']
         )
+
         is_creator = request.user == subproject.project.creator
         is_staff = request.user.is_staff
-        if is_staff or is_creator:
-            return super(SubProjectUpdate, self).\
-                dispatch(request, *args, **kwargs)
+        is_editable = subproject.project.status != PROJECT_STATUS_CHOICES[1][0]
 
+        if is_staff or is_creator:
+            if is_editable:
+                return super(SubProjectUpdate, self).\
+                    dispatch(request, *args, **kwargs)
+            else:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Ce projet n’est plus éditable, il a été validé !"
+                )
         else:
             messages.add_message(
                 request,
@@ -314,10 +323,11 @@ class SubProjectUpdate(generic.UpdateView):
                 'Vous ne disposer des droits nécessaire'
                 ' afin de modifier ce sous-projet!'
             )
-            return redirect(reverse_lazy(
-                'projects:project_detail',
-                kwargs={'pk': subproject.project.id}
-            ))
+
+        return redirect(reverse_lazy(
+            'projects:project_detail',
+            kwargs={'pk': subproject.project.id}
+        ))
 
     def get_success_url(self):
         return reverse_lazy(
