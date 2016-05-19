@@ -127,12 +127,45 @@ class SubProjectCreate(generic.CreateView):
     template_name = 'project/subproject_form.html'
 
     @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(SubProjectCreate, self).dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        project = get_object_or_404(
+            Project,
+            id=kwargs['projectID']
+        )
+
+        is_creator = request.user == project.creator
+        is_staff = request.user.is_staff
+        is_editable = project.status != PROJECT_STATUS_CHOICES[1][0]
+
+        if is_creator or is_staff:
+            if is_editable:
+                return super(SubProjectCreate, self).\
+                    dispatch(request, *args, **kwargs)
+            else:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Ce projet n’est plus éditable, il a été validé !"
+                )
+        else:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Vous ne disposer des droits nécessaire'
+                ' afin de créer ce sous-projet!'
+            )
+
+        return redirect(reverse_lazy(
+            "projects:project_detail",
+            args=[project.id]
+        ))
 
     def form_valid(self, form):
         form.instance.project = Project.objects.\
             get(id=self.kwargs['projectID'])
+
+        form.instance.project.status = PROJECT_STATUS_CHOICES[0][0]
+        form.instance.project.save()
         return super(SubProjectCreate, self).form_valid(form)
 
     def get_success_url(self):
@@ -150,31 +183,47 @@ class ProjectUpdate(generic.UpdateView):
     template_name = "project/project_update.html"
 
     @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         project = get_object_or_404(
             Project,
-            id=self.kwargs['pk']
+            id=kwargs['pk']
         )
-        is_creator = self.request.user == project.creator
-        is_staff = self.request.user.is_staff
+        is_creator = request.user == project.creator
+        is_staff = request.user.is_staff
+        is_editable = project.status != PROJECT_STATUS_CHOICES[1][0]
 
         if is_staff or is_creator:
-            return super(ProjectUpdate, self).dispatch(*args, **kwargs)
+            if is_editable:
+                return super(ProjectUpdate, self).\
+                    dispatch(request, *args, **kwargs)
+            else:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Ce projet n’est plus éditable, il a été validé !"
+                )
         else:
             messages.add_message(
-                self.request,
+                request,
                 messages.ERROR,
                 'Vous ne disposer des droits nécessaire'
                 ' afin de modifier ce projet!'
             )
-            return redirect(reverse_lazy(
-                "projects:project_list"
-            ))
+
+        return redirect(reverse_lazy(
+            "projects:project_detail",
+            kwargs={'pk': kwargs['pk']}
+        ))
+
+    def form_valid(self, form):
+        self.object.status = PROJECT_STATUS_CHOICES[0][0]
+        self.object = form.save()
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse_lazy(
             'projects:project_detail',
-            kwargs={'pk': self.object.id}
+            kwargs={'pk': self.kwargs['pk']}
         )
 
 
@@ -186,28 +235,34 @@ class SubProjectDelete(generic.DeleteView):
     pk_url_kwarg = 'subProjectID'
 
     @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         subproject = get_object_or_404(
             SubProject,
-            id=self.kwargs['subProjectID']
+            id=kwargs['subProjectID']
         )
-        is_creator = self.request.user == subproject.project.creator
-        is_staff = self.request.user.is_staff
+        is_creator = request.user == subproject.project.creator
+        is_staff = request.user.is_staff
+        is_editable = \
+            subproject.project.status != PROJECT_STATUS_CHOICES[1][0]
 
         if is_staff or is_creator:
-            if subproject.project.Votes.all().count():
-                messages.add_message(
-                    self.request,
-                    messages.ERROR,
-                    'Ce projet est déjà soumis au vote, vous ne pouvez'
-                    ' plus le modifier!'
-                )
-                return redirect(reverse_lazy(
-                    "projects:project_detail",
-                    args=[subproject.project.id]
-                ))
+            if is_editable:
+                if subproject.project.Votes.all().count():
+                    messages.add_message(
+                        request,
+                        messages.ERROR,
+                        'Ce projet est déjà soumis au vote, vous ne pouvez'
+                        ' plus le modifier!'
+                    )
+                else:
+                    return super(SubProjectDelete, self).\
+                        dispatch(request, *args, **kwargs)
             else:
-                return super(SubProjectDelete, self).dispatch(*args, **kwargs)
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Ce projet n’est plus éditable, il a été validé !"
+                )
         else:
             messages.add_message(
                 self.request,
@@ -215,9 +270,19 @@ class SubProjectDelete(generic.DeleteView):
                 'Vous ne disposer des droits nécessaire'
                 ' afin de supprimer ce sous-projet!'
             )
-            return redirect(reverse_lazy(
-                "projects:project_list"
-            ))
+
+        return redirect(reverse_lazy(
+            "projects:project_detail",
+            args=[subproject.project.id]
+        ))
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.project.status = PROJECT_STATUS_CHOICES[0][0]
+        self.object.project.save()
+        self.object.delete()
+        return HttpResponseRedirect(success_url)
 
     def get_success_url(self):
         messages.add_message(
@@ -291,12 +356,21 @@ class SubProjectUpdate(generic.UpdateView):
             SubProject,
             id=kwargs['pk']
         )
+
         is_creator = request.user == subproject.project.creator
         is_staff = request.user.is_staff
-        if is_staff or is_creator:
-            return super(SubProjectUpdate, self).\
-                dispatch(request, *args, **kwargs)
+        is_editable = subproject.project.status != PROJECT_STATUS_CHOICES[1][0]
 
+        if is_staff or is_creator:
+            if is_editable:
+                return super(SubProjectUpdate, self).\
+                    dispatch(request, *args, **kwargs)
+            else:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Ce projet n’est plus éditable, il a été validé !"
+                )
         else:
             messages.add_message(
                 request,
@@ -304,10 +378,17 @@ class SubProjectUpdate(generic.UpdateView):
                 'Vous ne disposer des droits nécessaire'
                 ' afin de modifier ce sous-projet!'
             )
-            return redirect(reverse_lazy(
-                'projects:project_detail',
-                kwargs={'pk': subproject.project.id}
-            ))
+
+        return redirect(reverse_lazy(
+            'projects:project_detail',
+            kwargs={'pk': subproject.project.id}
+        ))
+
+    def form_valid(self, form):
+        self.object.project.status = PROJECT_STATUS_CHOICES[0][0]
+        self.object.project.save()
+        self.object = form.save()
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse_lazy(
