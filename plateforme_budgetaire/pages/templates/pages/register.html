@@ -1,6 +1,8 @@
 {% extends "landing_base.html" %}
 <!-- Load internationalisation utils-->
 {% load i18n %}
+{% load bootstrap3 %}
+
 {% block title %}CDVU | S'enregister{% endblock %}
 
 {% block content %}
@@ -19,9 +21,12 @@
             <p class="alert alert-info"><strong>Pour vous inscire, rien de plus simple!</strong><br/> Nous n'avons besoin que de votre courriel étudiant.</p>
 
             <form method="post">{% csrf_token%}
-                {{ form }}
+                {% bootstrap_form form %}
+                {% buttons %}
+                    <button type="submit" class="btn btn-default">S'inscrire</button> ou <a href="{% url 'pages:home'%}">Se connecter</a>
+                {% endbuttons %}
                 <br/>
-                <button type="submit" class="btn btn-default">S'inscrire</button> ou <a href="{% url 'pages:home'%}">Se connecter</a>
+
             </form>
         </div>
     </div>
