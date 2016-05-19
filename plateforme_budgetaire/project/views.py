@@ -150,31 +150,41 @@ class ProjectUpdate(generic.UpdateView):
     template_name = "project/project_update.html"
 
     @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         project = get_object_or_404(
             Project,
-            id=self.kwargs['pk']
+            id=kwargs['pk']
         )
-        is_creator = self.request.user == project.creator
-        is_staff = self.request.user.is_staff
+        is_creator = request.user == project.creator
+        is_staff = request.user.is_staff
+        is_editable = project.status != PROJECT_STATUS_CHOICES[1][0]
 
         if is_staff or is_creator:
-            return super(ProjectUpdate, self).dispatch(*args, **kwargs)
+            if is_editable:
+                return super(ProjectUpdate, self).dispatch(request*args, **kwargs)
+            else:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Ce projet n’est plus éditable, il a été validé !"
+                )
         else:
             messages.add_message(
-                self.request,
+                request,
                 messages.ERROR,
                 'Vous ne disposer des droits nécessaire'
                 ' afin de modifier ce projet!'
             )
-            return redirect(reverse_lazy(
-                "projects:project_list"
-            ))
+
+        return redirect(reverse_lazy(
+            "projects:project_detail",
+            kwargs={'pk': kwargs['pk']}
+        ))
 
     def get_success_url(self):
         return reverse_lazy(
             'projects:project_detail',
-            kwargs={'pk': self.object.id}
+            kwargs={'pk': self.kwargs['pk']}
         )
 
 
