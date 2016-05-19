@@ -334,6 +334,12 @@ class SubProjectUpdate(generic.UpdateView):
             kwargs={'pk': subproject.project.id}
         ))
 
+    def form_valid(self, form):
+        self.object.project.status = PROJECT_STATUS_CHOICES[0][0]
+        self.object.project.save()
+        self.object = form.save()
+        return HttpResponseRedirect(self.get_success_url())
+
     def get_success_url(self):
         return reverse_lazy(
             'projects:project_detail',
