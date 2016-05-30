@@ -91,3 +91,13 @@ class SubProjectsForm(forms.ModelForm):
                 }
             ),
         }
+
+    def clean(self):
+        minimum_amount = self.cleaned_data.get("minimum_amount")
+        maximum_amount = self.cleaned_data.get("maximum_amount")
+
+        if minimum_amount and maximum_amount:
+            if maximum_amount < minimum_amount:
+                msg = u"Le montant maximal doit être supérieur" \
+                      u" au montant minimal."
+                self._errors["maximum_amount"] = self.error_class([msg])
