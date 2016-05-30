@@ -128,6 +128,14 @@ LOGIN_REDIRECT_URL = reverse_lazy('pages:home')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
+
+# BOOTSRATP 3
+
+BOOTSTRAP3 = {
+    'success_css_class': '',
+}
+
+
 CONSTANT = {
     'site': {
         'name': u"Plateforme budgétaire",
