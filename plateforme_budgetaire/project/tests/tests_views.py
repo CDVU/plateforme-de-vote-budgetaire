@@ -446,6 +446,36 @@ class SubProjectCreateViewTests(TestCase):
         )
         self.assertEqual(result.status_code, 200)
 
+    def test_error_project_already_validated(self):
+        self.client.logout()
+        self.client.login(
+            username=self.admin.username,
+            password="passAdmin"
+        )
+
+        self.project.status = PROJECT_STATUS_CHOICES[1][0]
+        self.project.save()
+
+        result = self.client.get(
+            reverse(
+                'projects:subproject_create',
+                kwargs={'projectID': self.project.id}
+            ),
+            follow=True
+        )
+        self.assertRedirects(
+            result,
+            reverse(
+                'projects:project_detail',
+                kwargs={'pk': self.project.id}
+            ),
+            status_code=302
+        )
+        self.assertContains(
+            result,
+            "Ce projet n’est plus éditable, il a été validé !"
+        )
+
 
 class ProjectUpdateViewTests(TestCase):
 
