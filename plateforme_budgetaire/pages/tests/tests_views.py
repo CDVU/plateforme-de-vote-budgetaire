@@ -484,11 +484,12 @@ class RegisterValidationViewTests(TestCase):
             user=self.user,
             hash='toto',
             action='register',
-            duration=datetime.timedelta(minutes=0),
+            duration=datetime.timedelta(minutes=30),
         )
 
         # We set the hash as already used
         hash.used = True
+        hash.save()
 
         result = self.client.get(
             reverse(
