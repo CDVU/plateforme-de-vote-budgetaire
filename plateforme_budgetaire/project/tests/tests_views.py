@@ -73,6 +73,40 @@ class ProjectListViewTests(TestCase):
         )
         self.assertEqual(result.status_code, 302)
 
+    def test_access_with_status_as_user(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:project_list',
+                kwargs={'validated': 1}
+            ),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 200)
+
+    def test_access_with_status_as_admin(self):
+        self.client.logout()
+        self.client.login(
+            username=self.admin.username,
+            password="passAdmin"
+        )
+
+        result = self.client.get(
+            reverse(
+                'projects:project_list',
+                kwargs={'validated': 1}
+            ),
+            follow=False
+        )
+
+        self.assertEqual(result.status_code, 200)
+
 
 class ProjectDetailViewTests(TestCase):
 
