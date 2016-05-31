@@ -398,6 +398,33 @@ class SubProjectCreateViewTests(TestCase):
         )
         self.assertEqual(result.status_code, 302)
 
+    def test_error_on_amount(self):
+        self.client.logout()
+        self.client.login(
+            username=self.user.username,
+            password="passUser"
+        )
+
+        data = {
+            'name': 'Nouveau projet',
+            'description': 'Ma description',
+            'completion_time': datetime.timedelta(1157, 35200),
+            'minimum_amount': 3000,
+            'maximum_amount': 2000,
+        }
+
+        result = self.client.post(
+            reverse(
+                'projects:subproject_create',
+                kwargs={'projectID': self.project.id}
+            ),
+            data,
+            follow=False
+        )
+        self.assertEqual(result.status_code, 200)
+        self.assertContains(result, "Le montant maximal doit être supérieur"
+                                    " au montant minimal.")
+
     def test_missing_fields_when_add_a_subproject(self):
         self.client.logout()
         self.client.login(
