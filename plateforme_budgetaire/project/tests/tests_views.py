@@ -353,8 +353,8 @@ class SubProjectCreateViewTests(TestCase):
 
         result = self.client.get(
             reverse(
-                'projects:project_update',
-                kwargs={'pk': self.project_2.id}
+                'projects:subproject_create',
+                kwargs={'projectID': self.project_2.id}
             ),
             follow=False
         )
