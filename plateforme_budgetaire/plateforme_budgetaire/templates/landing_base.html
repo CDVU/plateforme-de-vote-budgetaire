@@ -31,12 +31,20 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <li><a href="{% url 'pages:home'%}">Accueil</a></li>
+                        <li>
+                            <a href="{% url 'pages:home'%}">
+                                {% if not user.username %}
+                                Accueil
+                                {% else %}
+                                Règlement
+                                {% endif %}
+                            </a>
+                        </li>
                         {% if user.username %}
                         <li><a href="{% url 'projects:project_list'%}">Liste des projets</a></li>
                         <li><a href="{% url 'votes:home'%}">Système de vote</a></li>
                         {% endif %}
-                        <li><a href="{% url 'pages:mission'%}">Notre mission</a></li>
+                        <li><a href="{% url 'pages:mission'%}">À propos</a></li>
                         <li><a href="{% url 'pages:contact'%}">Contact</a></li>
                     </ul>
 

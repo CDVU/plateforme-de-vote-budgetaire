@@ -3,17 +3,43 @@
 {% load i18n %}
 {% load bootstrap3 %}
 
-{% block title %}CDVU | Home{% endblock %}
+{% block title %}
+    {% if not user.username %}
+        CDVU | Home
+    {% else %}
+        CDVU | Règlement
+    {% endif %}
+{% endblock %}
 
 {% block content %}
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-7">
+            {% if not user.username %}
             <div class="page-header">
-                <h2>A propos du CDVU</h2>
+                <h2>Mission</h2>
             </div>
             <p class="text-justify">Le Comité du développement de la vie universitaire vise à améliorer la vie étudiante à l’École. Le comité a pour mission de proposer des projets à l’Association afin d’affecter ses surplus budgétaires. Le comité doit favoriser la concertation étudiante quant à ces projets ou à tout autres projet concernant la vie étudiante à l’École. Le Comité du développement de la vie universitaire siège sur le Comité de concertation à la vie étudiante de l’École.</p>
+            {% else %}
+            <div class="page-header">
+                <h2>Règlement</h2>
+            </div>
+            <p>Critère d’admissibilité des projets :</p>
+            <ul>
+                <li>Achat d’éléments durables et à bénéfice continu</li>
+                <li>Création de nouveaux services ou qui bonifie l’offre de services offerts par l’AEETS</li>
+                <li>Réalisation de projets d’envergure, durables et fédérateurs</li>
+                <li>Le projet doit maximiser le nombre de membres directement touché. Favorise la population étudiante et non un groupe restreins.</li>
+            </ul>
+            <p>Sans s’y limiter, les projets suivants ne sont pas admissibles :</p>
+            <ul>
+                <li>Tout projet ponctuel</li>
+                <li>Tout projet incomplet</li>
+                <li>Tout projet n’étant pas accompagné d’un budget ni de plan de réalisation</li>
+                <li>Tout projet ne correspondant pas à la mission du comité</li>
+            </ul>
+            {% endif %}
         </div>
-        <div class="col-sm-5 col-sm-offset-1">
+        <div class="col-sm-4 col-sm-offset-1">
             {% if not user.username %}
             <div class="page-header">
                 <h1>Connexion : </h1>
