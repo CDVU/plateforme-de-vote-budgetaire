@@ -36,7 +36,7 @@
                                 {% if not user.username %}
                                 Accueil
                                 {% else %}
-                                Règlement
+                                À propos
                                 {% endif %}
                             </a>
                         </li>
@@ -44,7 +44,7 @@
                         <li><a href="{% url 'projects:project_list'%}">Liste des projets</a></li>
                         <li><a href="{% url 'votes:home'%}">Système de vote</a></li>
                         {% endif %}
-                        <li><a href="{% url 'pages:mission'%}">À propos</a></li>
+                        <li><a href="{% url 'pages:mission'%}">Règlement</a></li>
                         <li><a href="{% url 'pages:contact'%}">Contact</a></li>
                     </ul>
 
