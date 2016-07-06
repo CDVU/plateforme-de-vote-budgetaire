@@ -1,0 +1,32 @@
+<div {% if forloop.first %}id="main-menu-projects"{% endif %} class="col-sm-3 {% if not forloop.first %}menu-repeated{% endif %}">
+    <ul class="nav nav-pills nav-stacked">
+        {% for project_menu in vote.projects.all %}
+        {% if project_menu = project %}
+        <li role="presentation" class="menu-project active">
+        {% else %}
+        <li role="presentation" class="menu-project">
+        {% endif %}
+            <a href="#project-{{project_menu.id}}" class="link-menu" onclick="changeContent({{project_menu.id}}, this)">
+                <span class="menu-project-{{project_menu.id}} icon-menu-project"></span>
+                {{project_menu.name}}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% if forloop.first %}
+    <button id="submit-vote" type="submit" class="submit-button btn btn-success btn-lg" data-toggle="modal" data-target="#SubmitModal">
+        Soumettre le vote
+    </button>
+    {% else %}
+    <hr>
+    <div class="text-right">
+        <p>
+            Pour soumettre votre vote, vous devez vous rendre en haut de la page.
+        </p>
+        <a href="#" class="btn btn-default btn-xs">
+            Retour en haut de page
+            <i class="fa fa-level-up"></i>
+        </a>
+    </div>
+    {% endif %}
+</div>

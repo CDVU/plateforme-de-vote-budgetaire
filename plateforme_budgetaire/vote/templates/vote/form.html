@@ -8,8 +8,32 @@
             <div class="page-header">
                 <h2>Formulaire de vote</h2>
             </div>
+
             <!-- PROGRESS BAR -->
-            <div id="progress-bar" class="col-sm-12">
+            <noscript>
+                <!-- SHOW A WARNING MESSAGE FOR PEOPLE WITHOUT JS -->
+                <div class="alert alert-danger">
+                    <h4>
+                        <i class="fa fa-exclamation-triangle"></i>
+                        JavaScript semble être désactivé sur votre navigateur, nous vous conseillons de l'activer afin de profiter pleinement de notre expérience utilisateur.
+                    </h4>
+                    <p>
+                        Nous sommes conscients et respectueux de vos libertés d'utilisateur, le formulaire reste donc entièrement utilisable sans JavaScript.
+                    </p>
+                    <p>
+                        <ul>
+                            <li>
+                                La touche entrée de votre clavier envoi le formulaire, soyez donc très vigileant
+                            </li>
+                            <li>
+                                Le budget pour cette session de vote est de <strong>{{vote.amount}} $</strong>, vous devez donc respecter ce montant maximal!
+                            </li>
+                        </ul>
+                    </p>
+                </div>
+            </noscript>
+
+            <div id="progress-bar" style="display:none" class="col-sm-12">
                 <div id="tooltip" class="progress" data-toggle="tooltip" data-placement="bottom" title="Il vous reste {{vote.amount}}$ de budget!">
                     <div id="progress-bar-text" class="progress-bar" aria-valuemax="{{vote.amount}}" role="progressbar" style="min-width: 2em;">
                         0$
@@ -19,108 +43,97 @@
 
             <!-- CONTENT -->
             <form method="post" action='{% url "votes:form" vote.id %}'>{% csrf_token%}
-                <div class="col-sm-9">
-                    {% for project in vote.projects.all %}
-                    {% if forloop.first %}
-                    <div id="project-{{project.id}}" class="project-content panel panel-default">
-                    {% else %}
-                    <div id="project-{{project.id}}" style="display:none;" class="project-content panel panel-default">
-                    {% endif %}
-                        <div class="panel-heading panel-heading-large">
-                            <span class="pull-right">
-                                <input class="project-switch" type="checkbox" name="project-{{project.id}}" onchange="changeValueSwitch({{project.id}}, this.checked)">
-                            </span>
-                            <strong>{{project.name}}</strong>
-                        </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <strong>Porteur du projet :</strong> {{project.author_name}}<br>
-                                    {% if project.author_website %}
-                                    <strong>Site web :</strong> <a href="{{project.author_website}}">{{project.author_website}}</a><br>
-                                    {% endif %}
-                                    <strong>À propos :</strong> {{project.author_description}}<br>
-                                </div>
-                                <div class="col-sm-6">
-                                    <strong>Nombre d'étudiant impacté :</strong> {{project.number_affected_by}}<br>
-                                    <strong>Temps nécessaire :</strong> {{project.completion_time}}<br>
-                                    <strong>Date de soumission :</strong> {{project.date_of_submission}}<br>
-                                </div>
+                {% for project in vote.projects.all %}
+                <div class="col-sm-12">
+                    <div class="col-sm-9">
+                        <div id="project-{{project.id}}" class="project-content panel panel-default">
+                            <div class="panel-heading panel-heading-large">
+                                <span class="pull-right">
+                                    <label for="checkbox-project-{{project.id}}">Financer le projet :</label>
+                                    <input class="project-switch" type="checkbox" id="checkbox-project-{{project.id}}" name="project-{{project.id}}" onchange="changeValueSwitch({{project.id}}, this.checked)">
+                                </span>
+                                <strong>{{project.name}}</strong>
                             </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <h2>Description:</h2>
-                                    <p class="text-justify">
-                                        {{ project.description }}
-                                    </p>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <strong>Porteur du projet :</strong> {{project.author_name}}<br>
+                                        {% if project.author_website %}
+                                        <strong>Site web :</strong> <a href="{{project.author_website}}">{{project.author_website}}</a><br>
+                                        {% endif %}
+                                        <strong>À propos :</strong> {{project.author_description}}<br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <strong>Nombre d'étudiant impacté :</strong> {{project.number_affected_by}}<br>
+                                        <strong>Temps nécessaire :</strong> {{project.completion_time}}<br>
+                                        <strong>Date de soumission :</strong> {{project.date_of_submission}}<br>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <h2>Justification:</h2>
-                                    <p class="text-justify">
-                                        {{ project.justification }}
-                                    </p>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <h2>Description:</h2>
+                                        <p class="text-justify">
+                                            {{ project.description }}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row" id="sub-project">
-                                <div class="col-sm-12">
-                                    <h2>Sous-projets : </h2>
-                                    {% for subProject in project.SubProject.all %}
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading panel-heading-large">
-                                            <span class="pull-right">
-                                                <input onchange="refreshProgressBar()" class="subProject-switch" type="checkbox" name="subProject-{{subProject.id}}" checked>
-                                            </span>
-                                            <h4 class="panel-title">
-                                                {{ subProject.name }}
-                                            </h4>
-                                        </div>
-                                        <div class="panel-body">
-                                            <strong>Temps nécessaire :</strong> {{ subProject.completion_time }}<br>
-                                            <strong>Montant :</strong> {{ subProject.minimum_amount }} - {{ subProject.maximum_amount }}<br>
-                                            <br>
-                                            <p>
-                                                {{ subProject.description }}
-                                            </p><br/>
-                                            <input class="subProject-{{subProject.id}}-amount" name="subProject-{{subProject.id}}-amount" onchange="changeValueAmount(this.value, {{subProject.id}})" type="range" value="{{subProject.minimum_amount}}" min="{{subProject.minimum_amount}}" max="{{subProject.maximum_amount}}">
-                                            <div class="input-group">
-                                                <span class="input-group-addon" id="basic-addon1">$</span>
-                                                <input class="subProject-{{subProject.id}}-amount form-control" name="subProject-{{subProject.id}}-amount" onchange="changeValueAmount(this.value, {{subProject.id}})" type="number" value="{{subProject.minimum_amount}}" min="{{subProject.minimum_amount}}" max="{{subProject.maximum_amount}}">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <h2>Justification:</h2>
+                                        <p class="text-justify">
+                                            {{ project.justification }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row" id="sub-project">
+                                    <div class="col-sm-12">
+                                        <h2>Sous-projets : </h2>
+                                        {% for subProject in project.SubProject.all %}
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading panel-heading-large">
+                                                <span class="pull-right">
+                                                    <label for="checkbox-subProject-{{subProject.id}}">Financer le sous-projet :</label>
+                                                    <input onchange="refreshProgressBar()" class="subProject-switch" type="checkbox" id="checkbox-subProject-{{subProject.id}}" name="subProject-{{subProject.id}}" checked>
+                                                </span>
+                                                <h4 class="panel-title">
+                                                    {{ subProject.name }}
+                                                </h4>
+                                            </div>
+                                            <div class="panel-body">
+                                                <strong>Temps nécessaire :</strong> {{ subProject.completion_time }}<br>
+                                                <strong>Montant :</strong> {{ subProject.minimum_amount }} - {{ subProject.maximum_amount }}<br>
+                                                <br>
+                                                <p>
+                                                    {{ subProject.description }}
+                                                </p><br/>
+                                                <input style="display:none" class="subProject-{{subProject.id}}-amount subProject-amount" name="subProject-{{subProject.id}}-amount" onchange="changeValueAmount(this.value, {{subProject.id}})" type="range" value="{{subProject.minimum_amount}}" min="{{subProject.minimum_amount}}" max="{{subProject.maximum_amount}}">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon" id="basic-addon1">$</span>
+                                                    <input class="subProject-{{subProject.id}}-amount form-control" name="subProject-{{subProject.id}}-amount" onchange="changeValueAmount(this.value, {{subProject.id}})" type="number" value="{{subProject.minimum_amount}}" min="{{subProject.minimum_amount}}" max="{{subProject.maximum_amount}}">
+                                                </div>
                                             </div>
                                         </div>
+                                        {% endfor %}
                                     </div>
-                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
+
+                    <!-- MENU -->
+                    {% include "vote/menu_form.html" %}
+
                 </div>
+                {% endfor %}
 
-
-                <!-- MENU -->
-                <div class="col-sm-3">
-                    <ul class="nav nav-pills nav-stacked">
-                        {% for project in vote.projects.all %}
-                        {% if forloop.first %}
-                        <li role="presentation" class="menu-project active">
-                        {% else %}
-                        <li role="presentation" class="menu-project">
-                        {% endif %}
-                            <a href="#" onclick="changeContent({{project.id}}, this)">
-                                <span id="menu-project-{{project.id}}" class="glyphicon glyphicon-remove"></span>
-                                {{project.name}}
-                            </a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    <button id="submit-vote" type="button" class="btn btn-success" data-toggle="modal" data-target="#SubmitModal">
+                <!-- submit button on bottom page -->
+                <div class="col-sm-9">
+                    <button type="submit" class="submit-button btn btn-success btn-lg btn-block" data-toggle="modal" data-target="#SubmitModal">
                         Soumettre le vote
                     </button>
                 </div>
-                    </div>
+
 
                 <!-----------
                 --- MODAL ---
@@ -128,39 +141,47 @@
 
                 <!-- Submit modal -->
                 <div class="modal fade" id="SubmitModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">Soumettre le vote</h4>
-                      </div>
-                      <div class="modal-body">
-                        Êtes-vous sûr de vouloir soumettre votre vote ?
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-success">Soumettre</button>
-                      </div>
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">
+                                    Soumettre le vote
+                                </h4>
+                            </div>
+
+                            <div class="modal-body">
+                                Êtes-vous sûr de vouloir soumettre votre vote ?
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+                                <button type="submit" class="btn btn-success">Soumettre</button>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
 
                 <!-- Error modal -->
                 <div class="modal fade" id="ErrorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">Impossible de soumettre le vote</h4>
-                      </div>
-                      <div class="modal-body">
-                        Le budget que vous avez défini dépasse le budget soumis au vote. Vous devez d'abord équilibrer votre budget!
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Annuler</button>
-                      </div>
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">
+                                    Impossible de soumettre le vote
+                                </h4>
+                            </div>
+
+                            <div class="modal-body">
+                                Le budget que vous avez défini dépasse le budget soumis au vote. Vous devez d'abord équilibrer votre budget!
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Annuler</button>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
             </form>
         </div>
@@ -176,12 +197,16 @@
     <!-- JS CHANGE VALUE SWITCH -->
     <script type="text/javascript">
         function changeValueSwitch(id, value) {
-                menu = document.getElementById('menu-project-'+id);
-                if(value == true){
-                    menu.className = "glyphicon glyphicon-ok";
-                }
-                else{
-                    menu.className = "glyphicon glyphicon-remove";
+                menus = document.getElementsByClassName('menu-project-'+id);
+                for (index = 0; index < menus.length; ++index) {
+                    if(value == true){
+                        menus[index].classList.remove("glyphicon-remove");
+                        menus[index].classList.add("glyphicon-ok");
+                    }
+                    else{
+                        menus[index].classList.remove("glyphicon-ok");
+                        menus[index].classList.add("glyphicon-remove");
+                    }
                 }
                 refreshProgressBar()
         }
@@ -254,24 +279,25 @@
             /**************************
             Link of submit button
             **************************/
-            button = document.getElementById('submit-vote');
-            if(value/max*100 <= 100){
-                button.setAttribute('data-target', '#SubmitModal');
+            buttons = document.getElementsByClassName('submit-button');
+            for (index = 0; index < buttons.length; ++index) {
+                if(value/max*100 <= 100){
+                    buttons[index].setAttribute('data-target', '#SubmitModal');
+                }
+                else{
+                    buttons[index].setAttribute('data-target', '#ErrorModal');
+                }
             }
-            else{
-                button.setAttribute('data-target', '#ErrorModal');
-            }
-
         }
     </script>
 
     <!-- JS CHANGE VALUE AMOUNT SUBPROJECT -->
     <script type="text/javascript">
         function changeValueAmount(value, id) {
-                menu = document.getElementsByClassName('subProject-' + id + '-amount');
-                menu[0].value = value;
-                menu[1].value = value;
-                refreshProgressBar()
+            menu = document.getElementsByClassName('subProject-' + id + '-amount');
+            menu[0].value = value;
+            menu[1].value = value;
+            refreshProgressBar()
         }
     </script>
 
@@ -294,25 +320,83 @@
     <!-- JS CHANGE CONTENT/PROJECT -->
     <script type="text/javascript">
         function changeContent(id, element) {
-                projects = document.getElementsByClassName('project-content');
-                for (index = 0; index < projects.length; ++index) {
-                    projects[index].style.display = 'none';
-                }
-                document.getElementById('project-'+id).style.display = 'block';
+            projects = document.getElementsByClassName('project-content');
+            for (index = 0; index < projects.length; ++index) {
+                projects[index].style.display = 'none';
+            }
+            divProject = document.getElementById('project-'+id)
+            divProject.style.display = 'block';
 
-                menus = document.getElementsByClassName('menu-project');
-                for (index = 0; index < menus.length; ++index) {
-                    menus[index].className = "menu-project";
-                }
-                element.parentNode.className += " active";
+            divProject.parentNode.parentNode.appendChild(document.getElementById('main-menu-projects'));
 
+            menus = document.getElementsByClassName('menu-project');
+            for (index = 0; index < menus.length; ++index) {
+                menus[index].className = "menu-project";
+            }
+            element.parentNode.className += " active";
         }
+    </script>
+
+    <!-- JS DISABLE ENTER KEY ON SUBMIT -->
+    <script type="text/javascript">
+        $(document).keypress(
+            function(event){
+            if (event.which == '13') {
+                event.preventDefault();
+            }
+        });
     </script>
 
     <!-- JS TOOLTIP -->
     <script type="text/javascript">
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+
+    <!-- JS INIT IF JS ALLOW -->
+    <script type="text/javascript">
+        $(function () {
+            // Show only one project
+            projects = document.getElementsByClassName('project-content');
+            for (index = 0; index < projects.length; ++index) {
+                projects[index].style.display = 'none';
+            }
+            projects[0].style.display = 'block';
+
+            // Remove href of link in menu
+            links = document.getElementsByClassName('link-menu');
+            for (index = 0; index < links.length; ++index) {
+                links[index].href = '#';
+            }
+            projects[0].style.display = 'block';
+
+            // Add icons in menu
+            icons = document.getElementsByClassName('icon-menu-project');
+            for (index = 0; index < icons.length; ++index) {
+                icons[index].className += " glyphicon glyphicon-remove";
+            }
+
+            // Hide repeated menu
+            menus = document.getElementsByClassName('menu-repeated');
+            for (index = 0; index < menus.length; ++index) {
+                menus[index].style.display = "none";
+            }
+
+            // Hide sliders for sub-projects
+            sliders = document.getElementsByClassName('subProject-amount');
+            for (index = 0; index < sliders.length; ++index) {
+                sliders[index].style.display = "block";
+            }
+
+            // Enable use of submit button
+            submits = document.getElementsByClassName('submit-button');
+            for (index = 0; index < submits.length; ++index) {
+                submits[index].type = 'button';
+            }
+
+            // Show progress-bar
+            document.getElementById('progress-bar').style.display = 'block';
         })
     </script>
 {% endblock %}
