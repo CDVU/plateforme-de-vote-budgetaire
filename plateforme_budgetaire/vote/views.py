@@ -39,25 +39,63 @@ class Form(generic.DetailView):
         vote = Vote.objects.get(id=kwargs['pk'])
         project_list = []
 
-        # List accepted project
+        # We make the list of accepted project
         for project in vote.projects.all():
             if 'project-' + str(project.id) in request.POST:
                 project_list.append(project.id)
 
-        # List subProject accepted in accepted project
+        # We make the list of subProject accepted in accepted project
+        # (idSubProject, minAmount, maxAmount)
         sub_project_list = []
         for project in project_list:
             sub_projects = SubProject.objects.filter(project__id=project)
             for sub_project in sub_projects:
                 if 'subProject-' + str(sub_project.id) in request.POST:
-                    sub_project_list.append(sub_project.id)
+                    tuple_sub_project = (
+                        sub_project.id,
+                        sub_project.minimum_amount,
+                        sub_project.maximum_amount
+                    )
+
+                    sub_project_list.append(tuple_sub_project)
 
         # Check if the vote.amount is respected
         amount = 0
-        for elem_id in sub_project_list:
-            amount += int(request.POST['subProject-' +
-                                       str(elem_id) +
-                                       '-amount'])
+        for elem in sub_project_list:
+            post_amount = int(
+                request.POST['subProject-' + str(elem[0]) + '-amount']
+            )
+            # Check if each amount is valid
+            if elem[1] <= post_amount:
+                if elem[2] >= post_amount:
+                    amount += int(
+                        request.POST['subProject-' + str(elem[0]) + '-amount']
+                    )
+                else:
+                    messages.add_message(
+                        request,
+                        messages.ERROR,
+                        'Une erreur est survenue, si le problème '
+                        'persiste veuillez nous contacter !'
+                    )
+                    response = reverse(
+                        'votes:form',
+                        kwargs={'pk': vote.id}
+                    )
+                    return HttpResponseRedirect(response)
+            else:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    'Une erreur est survenue, si le problème '
+                    'persiste veuillez nous contacter !'
+                )
+                response = reverse(
+                    'votes:form',
+                    kwargs={'pk': vote.id}
+                )
+                return HttpResponseRedirect(response)
+
         if amount > vote.amount:
             messages.add_message(
                 request,
@@ -65,16 +103,19 @@ class Form(generic.DetailView):
                 'Une erreur est survenu avec votre budget, celui-ci est '
                 'supérieur au budget disponible. Veuillez recommencer!'
             )
-            response = reverse('votes:form')
+            response = reverse(
+                'votes:form',
+                kwargs={'pk': vote.id}
+            )
             return HttpResponseRedirect(response)
 
         # Create the poll
         poll = Poll.objects.create(vote=vote)
 
         # Create each choice of the poll
-        for elem_id in sub_project_list:
-            amount = request.POST['subProject-' + str(elem_id) + '-amount']
-            sub_project = SubProject.objects.get(id=elem_id)
+        for elem in sub_project_list:
+            amount = request.POST['subProject-' + str(elem[0]) + '-amount']
+            sub_project = SubProject.objects.get(id=elem[0])
             Choice.objects.create(
                 poll=poll,
                 amount=amount,
