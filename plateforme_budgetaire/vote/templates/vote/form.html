@@ -303,7 +303,13 @@
 
     <!-- JS PROGRESS BAR -->
     <script type="text/javascript">
+        // We need to show the progress bar to take it position
+        progress = document.getElementById('progress-bar');
+        progress.style.display = 'block';
         var positionElementInPage = $('#progress-bar').offset().top;
+        progress.style.display = 'none';
+
+        // On each scroll we refresh the status of the progress bar
         $(window).scroll(
             function() {
                 if ($(window).scrollTop() >= positionElementInPage-50) {
